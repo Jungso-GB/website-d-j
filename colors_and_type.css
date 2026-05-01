@@ -1,0 +1,205 @@
+/* ============================================================
+   DONJONS & JAMBONS — Colors & Typography
+   Design System CSS Custom Properties
+   ============================================================ */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+
+  /* ── BASE COLORS ── */
+  --dj-bg:           #0f0b07;
+  --dj-surface:      #1c1409;
+  --dj-surface-2:    #261b0d;
+  --dj-surface-3:    #2f2010;   /* even lighter, for nested elements */
+
+  --dj-gold:         #c9922a;
+  --dj-gold-light:   #e8b84b;
+  --dj-gold-dim:     rgba(201, 146, 42, 0.4);
+  --dj-gold-subtle:  rgba(201, 146, 42, 0.1);
+
+  --dj-red:          #8b1a1a;
+  --dj-red-light:    #c23030;
+  --dj-blue:         #1a3d6b;
+  --dj-blue-light:   #2a5ca0;
+
+  --dj-text:         #e8dcc8;
+  --dj-text-muted:   #8c7b65;
+  --dj-text-faint:   #5a4d3a;
+
+  --dj-border:       rgba(201, 146, 42, 0.25);
+  --dj-border-hover: rgba(201, 146, 42, 0.6);
+
+  /* ── SEMANTIC COLORS ── */
+  --dj-color-heading:     var(--dj-gold-light);
+  --dj-color-body:        var(--dj-text);
+  --dj-color-caption:     var(--dj-text-muted);
+  --dj-color-link:        var(--dj-gold);
+  --dj-color-link-hover:  var(--dj-gold-light);
+  --dj-color-bg-page:     var(--dj-bg);
+  --dj-color-bg-section-alt: var(--dj-surface);
+  --dj-color-bg-card:     var(--dj-surface-2);
+  --dj-color-accent:      var(--dj-gold);
+
+  /* ── ROLE BADGE COLORS ── */
+  --dj-tank-bg:    rgba(26,  61, 107, 0.6);
+  --dj-tank-text:  #7aaef5;
+  --dj-tank-border:rgba(122,174,245,0.3);
+  --dj-heal-bg:    rgba(20,  90,  40, 0.5);
+  --dj-heal-text:  #5dcc7a;
+  --dj-heal-border:rgba(93, 204,122, 0.3);
+  --dj-dps-bg:     rgba(139, 26,  26, 0.5);
+  --dj-dps-text:   #f06060;
+  --dj-dps-border: rgba(240, 96, 96, 0.3);
+
+  /* ── EVENT BADGE COLORS ── */
+  --dj-badge-mythic-bg:   rgba(100,60,200,0.3);
+  --dj-badge-mythic-text: #b0a0ff;
+  --dj-badge-raid-bg:     rgba(180,50,50,0.3);
+  --dj-badge-raid-text:   #f08080;
+  --dj-badge-social-bg:   rgba(201,146,42,0.2);
+  --dj-badge-social-text: var(--dj-gold-light);
+  --dj-badge-farming-bg:  rgba(30,100,50,0.3);
+  --dj-badge-farming-text:#80d080;
+
+  /* ── WOW CLASS COLORS ── */
+  --dj-class-guerrier:    #C79C6E;
+  --dj-class-paladin:     #F58CBA;
+  --dj-class-chasseur:    #ABD473;
+  --dj-class-voleur:      #FFF569;
+  --dj-class-pretre:      #FFFFFF;
+  --dj-class-dk:          #C41F3B;
+  --dj-class-chaman:      #0070DE;
+  --dj-class-mage:        #69CCF0;
+  --dj-class-demoniste:   #9482C9;
+  --dj-class-moine:       #00FF96;
+  --dj-class-druide:      #FF7D0A;
+  --dj-class-dh:          #A330C9;
+  --dj-class-evoker:      #33937F;
+
+  /* ── TYPOGRAPHY ── */
+  --dj-font-title:  'Cinzel', 'Palatino Linotype', Georgia, serif;
+  --dj-font-body:   'Open Sans', 'Lato', system-ui, sans-serif;
+  --dj-font-mono:   'Courier New', Courier, monospace;
+
+  /* Type Scale */
+  --dj-text-xs:   0.72rem;   /* 11.5px — badges, captions */
+  --dj-text-sm:   0.85rem;   /* 13.5px — small labels, nav */
+  --dj-text-base: 1rem;      /* 16px — body */
+  --dj-text-lg:   1.1rem;    /* 17.5px — lead paragraphs */
+  --dj-text-xl:   1.3rem;    /* 20px — card titles */
+  --dj-text-2xl:  clamp(1.4rem, 2.5vw, 1.8rem);  /* section subtitles */
+  --dj-text-3xl:  clamp(1.6rem, 4vw,   2.4rem);   /* section titles (h2) */
+  --dj-text-4xl:  clamp(2.2rem, 6vw,   4rem);     /* hero title (h1) */
+
+  /* Leading */
+  --dj-leading-tight:  1.2;
+  --dj-leading-snug:   1.4;
+  --dj-leading-normal: 1.7;
+  --dj-leading-loose:  1.9;
+
+  /* Letter-spacing */
+  --dj-tracking-tight: -0.01em;
+  --dj-tracking-normal: 0em;
+  --dj-tracking-wide:   0.04em;
+  --dj-tracking-wider:  0.08em;
+  --dj-tracking-widest: 0.12em;
+
+  /* ── SPACING ── */
+  --dj-space-1:  4px;
+  --dj-space-2:  8px;
+  --dj-space-3:  12px;
+  --dj-space-4:  16px;
+  --dj-space-5:  20px;
+  --dj-space-6:  24px;
+  --dj-space-8:  32px;
+  --dj-space-10: 40px;
+  --dj-space-12: 48px;
+  --dj-space-16: 64px;
+  --dj-space-20: 80px;
+
+  /* ── BORDER RADIUS ── */
+  --dj-radius-sm:  4px;
+  --dj-radius-md:  8px;
+  --dj-radius-lg:  12px;
+  --dj-radius-xl:  20px;   /* pill / badges */
+  --dj-radius-full: 50%;   /* avatars */
+
+  /* ── SHADOWS ── */
+  --dj-shadow-gold:   0 0 12px rgba(201,146,42,0.3);
+  --dj-shadow-gold-lg:0 0 24px rgba(201,146,42,0.45);
+  --dj-shadow-card:   0 0 18px rgba(201,146,42,0.12);
+  --dj-shadow-inset:  inset 0 1px 0 rgba(201,146,42,0.12);
+
+  /* ── TRANSITIONS ── */
+  --dj-transition: 0.25s ease;
+  --dj-transition-slow: 0.5s ease;
+
+  /* ── LAYOUT ── */
+  --dj-container-max: 1100px;
+  --dj-navbar-height: 68px;
+  --dj-section-padding: 80px 20px;
+}
+
+/* ── Semantic element defaults ── */
+h1, .dj-h1 {
+  font-family: var(--dj-font-title);
+  font-size: var(--dj-text-4xl);
+  color: var(--dj-gold-light);
+  letter-spacing: var(--dj-tracking-wide);
+  line-height: var(--dj-leading-tight);
+  text-shadow: 0 0 40px rgba(201,146,42,0.4);
+}
+
+h2, .dj-h2 {
+  font-family: var(--dj-font-title);
+  font-size: var(--dj-text-3xl);
+  color: var(--dj-gold-light);
+  letter-spacing: var(--dj-tracking-wide);
+  line-height: var(--dj-leading-snug);
+}
+
+h3, .dj-h3 {
+  font-family: var(--dj-font-title);
+  font-size: var(--dj-text-xl);
+  color: var(--dj-gold-light);
+  letter-spacing: var(--dj-tracking-wide);
+}
+
+h4, .dj-h4 {
+  font-family: var(--dj-font-title);
+  font-size: var(--dj-text-sm);
+  color: var(--dj-gold);
+  letter-spacing: var(--dj-tracking-widest);
+  text-transform: uppercase;
+}
+
+p, .dj-body {
+  font-family: var(--dj-font-body);
+  font-size: var(--dj-text-base);
+  color: var(--dj-text);
+  line-height: var(--dj-leading-normal);
+}
+
+.dj-caption {
+  font-family: var(--dj-font-body);
+  font-size: var(--dj-text-sm);
+  color: var(--dj-text-muted);
+  line-height: var(--dj-leading-normal);
+}
+
+.dj-label {
+  font-family: var(--dj-font-body);
+  font-size: var(--dj-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--dj-tracking-widest);
+  text-transform: uppercase;
+}
+
+a {
+  color: var(--dj-gold);
+  text-decoration: none;
+  transition: color var(--dj-transition);
+}
+a:hover { color: var(--dj-gold-light); }

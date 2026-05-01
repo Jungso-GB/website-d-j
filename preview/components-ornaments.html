@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans:wght@400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0b07;padding:28px;display:flex;flex-direction:column;gap:28px}
+.section-label{font-family:'Cinzel',serif;font-size:9px;color:#8c7b65;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px}
+
+/* Section ornament */
+.ornament{display:flex;align-items:center;justify-content:center;gap:14px;max-width:400px}
+.ornament::before,.ornament::after{content:'';flex:1;height:1px;background:#c9922a;opacity:0.5}
+.ornament-diamond{width:10px;height:10px;background:#c9922a;transform:rotate(45deg);flex-shrink:0}
+
+/* Full section header demo */
+.section-header{text-align:center;padding:20px 0}
+.section-title{font-family:'Cinzel',serif;font-size:1.8rem;color:#e8b84b;letter-spacing:0.04em;margin-bottom:10px}
+.section-subtitle{color:#8c7b65;font-size:0.9rem;font-family:'Open Sans',sans-serif;margin-bottom:12px}
+
+/* Navbar ornament */
+.nav-logo-name{font-family:'Cinzel',serif;font-size:0.95rem;color:#e8b84b;letter-spacing:0.05em}
+.nav-divider{height:1px;background:rgba(201,146,42,0.25);width:100%;margin:4px 0}
+
+/* FAQ item */
+.faq-item{background:#261b0d;border:1px solid rgba(201,146,42,0.25);border-radius:8px;overflow:hidden;max-width:500px}
+.faq-item.open{border-color:#c9922a}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;font-family:'Cinzel',serif;font-size:0.88rem;color:#e8dcc8}
+.faq-item.open .faq-q{color:#e8b84b}
+.faq-arrow{width:16px;height:16px;fill:none;stroke:#c9922a;stroke-width:2.5;flex-shrink:0;transition:transform 0.25s}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{padding:0 20px 16px;font-size:0.85rem;color:#8c7b65;line-height:1.7;font-family:'Open Sans',sans-serif}
+
+/* Grades timeline */
+.grades-track{display:flex;align-items:center;gap:0;padding:8px 0}
+.grade-step{display:flex;flex-direction:column;align-items:center;gap:6px}
+.grade-icon{width:40px;height:40px;border-radius:50%;background:#261b0d;border:2px solid rgba(201,146,42,0.25);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.grade-name{font-family:'Cinzel',serif;font-size:0.7rem;color:#e8b84b;letter-spacing:0.04em;text-align:center}
+.grade-connector{flex:1;min-width:24px;height:2px;background:linear-gradient(to right,#c9922a,#e8b84b);opacity:0.35;margin-bottom:22px}
+</style></head><body>
+
+<div>
+  <div class="section-label">Section Ornament + Header</div>
+  <div class="section-header">
+    <div class="section-title">La Guilde des Jambons</div>
+    <div class="section-subtitle">Les membres actifs de la guilde</div>
+    <div class="ornament" style="margin:0 auto"><span class="ornament-diamond"></span></div>
+  </div>
+</div>
+
+<div>
+  <div class="section-label">Ornament — Standalone</div>
+  <div class="ornament"><span class="ornament-diamond"></span></div>
+</div>
+
+<div>
+  <div class="section-label">FAQ Accordion · closed / open</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="faq-item">
+      <div class="faq-q">Qui peut rejoindre Donjons &amp; Jambons ?
+        <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+    <div class="faq-item open">
+      <div class="faq-q">Y a-t-il des obligations de présence ?
+        <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="faq-a">Aucune. Tu joues quand tu veux. La seule règle : si tu t'inscris à un événement, tu viens (ou tu préviens).</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="section-label">Guild Rank Timeline</div>
+  <div class="grades-track">
+    <div class="grade-step"><div class="grade-icon">🥩</div><div class="grade-name">Jambon<br>Frais</div></div>
+    <div class="grade-connector"></div>
+    <div class="grade-step"><div class="grade-icon">🍖</div><div class="grade-name">Jambonneau</div></div>
+    <div class="grade-connector"></div>
+    <div class="grade-step"><div class="grade-icon">👨‍🍳</div><div class="grade-name">Cuisinier</div></div>
+    <div class="grade-connector"></div>
+    <div class="grade-step"><div class="grade-icon">🍺</div><div class="grade-name">Tavernier</div></div>
+  </div>
+</div>
+
+</body></html>

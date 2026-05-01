@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0b07;font-family:'Open Sans',sans-serif;padding:20px;display:flex;flex-direction:column;gap:16px}
+.section-label{font-family:'Cinzel',serif;font-size:9px;color:#8c7b65;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1c1409;border:1px solid rgba(201,146,42,0.2);border-radius:6px;min-width:180px;flex:1}
+.dot{width:32px;height:32px;border-radius:4px;flex-shrink:0}
+.label{font-family:'Cinzel',serif;font-size:10px;color:#e8b84b;letter-spacing:0.04em;margin-bottom:2px}
+.usage{font-size:10px;color:#8c7b65}
+</style></head><body>
+<div class="section-label">Text Colors</div>
+<div class="row">
+  <div class="item"><div class="dot" style="background:#e8dcc8"></div><div><div class="label">Text</div><div class="usage">Body copy — #e8dcc8</div></div></div>
+  <div class="item"><div class="dot" style="background:#8c7b65"></div><div><div class="label">Text Muted</div><div class="usage">Captions, subtitles — #8c7b65</div></div></div>
+  <div class="item"><div class="dot" style="background:#5a4d3a"></div><div><div class="label">Text Faint</div><div class="usage">Disabled, decorative — #5a4d3a</div></div></div>
+</div>
+<div class="section-label">Interactive Colors</div>
+<div class="row">
+  <div class="item"><div class="dot" style="background:#c9922a"></div><div><div class="label">Link / Icon</div><div class="usage">Default interactive gold</div></div></div>
+  <div class="item"><div class="dot" style="background:#e8b84b"></div><div><div class="label">Link Hover</div><div class="usage">Hover / heading emphasis</div></div></div>
+  <div class="item"><div class="dot" style="background:rgba(201,146,42,0.25)"></div><div><div class="label">Border</div><div class="usage">All card/input borders</div></div></div>
+</div>
+<div class="section-label">Status Colors</div>
+<div class="row">
+  <div class="item"><div class="dot" style="background:rgba(26,61,107,0.6);border:1px solid rgba(122,174,245,0.3)"></div><div><div class="label" style="color:#7aaef5">Tank</div><div class="usage">Blue tint — protection</div></div></div>
+  <div class="item"><div class="dot" style="background:rgba(20,90,40,0.5);border:1px solid rgba(93,204,122,0.3)"></div><div><div class="label" style="color:#5dcc7a">Heal</div><div class="usage">Green tint — restoration</div></div></div>
+  <div class="item"><div class="dot" style="background:rgba(139,26,26,0.5);border:1px solid rgba(240,96,96,0.3)"></div><div><div class="label" style="color:#f06060">DPS</div><div class="usage">Red tint — damage</div></div></div>
+</div>
+</body></html>

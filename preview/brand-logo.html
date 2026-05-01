@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans:wght@400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0b07;padding:28px;display:flex;flex-direction:column;gap:28px;align-items:center}
+.logo-row{display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center}
+.logo-container{display:flex;flex-direction:column;align-items:center;gap:10px}
+.logo-label{font-family:'Cinzel',serif;font-size:9px;color:#8c7b65;letter-spacing:0.1em;text-transform:uppercase}
+.logo-bg-dark{background:#0f0b07;padding:16px;border-radius:8px;border:1px solid rgba(201,146,42,0.15)}
+.logo-bg-surface{background:#261b0d;padding:16px;border-radius:8px;border:1px solid rgba(201,146,42,0.25)}
+img{display:block}
+
+/* Brand wordmark */
+.wordmark{display:flex;align-items:center;gap:12px;padding:14px 20px;background:#1c1409;border:1px solid rgba(201,146,42,0.25);border-radius:8px}
+.wordmark-text{font-family:'Cinzel',serif;color:#e8b84b;letter-spacing:0.06em}
+.wordmark-sub{font-size:0.75rem;color:#8c7b65;font-family:'Open Sans',sans-serif;letter-spacing:0.08em;margin-top:2px}
+</style></head><body>
+
+<div class="logo-row">
+  <div class="logo-container">
+    <div class="logo-label">Logo · on Dark</div>
+    <div class="logo-bg-dark">
+      <img src="../assets/logo.png" width="100" height="100" alt="Donjons & Jambons logo" style="filter:drop-shadow(0 0 16px rgba(201,146,42,0.4))"/>
+    </div>
+  </div>
+  <div class="logo-container">
+    <div class="logo-label">Logo · on Surface</div>
+    <div class="logo-bg-surface">
+      <img src="../assets/logo.png" width="80" height="80" alt="Donjons & Jambons logo" style="filter:drop-shadow(0 0 10px rgba(201,146,42,0.3))"/>
+    </div>
+  </div>
+  <div class="logo-container">
+    <div class="logo-label">Logo · Small (navbar)</div>
+    <div class="logo-bg-dark">
+      <img src="../assets/logo.png" width="42" height="42" alt="Donjons & Jambons logo" style="border-radius:50%;border:1px solid rgba(201,146,42,0.25)"/>
+    </div>
+  </div>
+</div>
+
+<div class="wordmark">
+  <img src="../assets/logo.png" width="42" height="42" alt="" style="border-radius:50%;border:1px solid rgba(201,146,42,0.25)"/>
+  <div>
+    <div class="wordmark-text">Donjons &amp; Jambons</div>
+    <div class="wordmark-sub">Guilde WoW · Kirin-Tor EU</div>
+  </div>
+</div>
+
+<div style="max-width:500px;border-radius:8px;overflow:hidden;border:1px solid rgba(201,146,42,0.2)">
+  <img src="../assets/banniere groupe.jpg" alt="Photo de groupe de la guilde" style="width:100%;display:block"/>
+</div>
+
+</body></html>

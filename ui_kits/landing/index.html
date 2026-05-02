@@ -665,6 +665,12 @@ const CONFIG = {
 
   const badgeCls = r => ({ Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' }[r] || '');
 
+  /** Remplace -avatar.jpg (84px) par -inset.jpg (230px) dans les URLs Blizzard. */
+  function upgradeAvatarUrl(url) {
+    if (!url) return url;
+    return url.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1');
+  }
+
   /** Normalise un nom WoW comme le fait le bot (sans accents, minuscules). */
   function normWoW(name) {
     return String(name).toLowerCase()
@@ -705,7 +711,8 @@ const CONFIG = {
 
       let avatarHtml;
       if (m.avatar) {
-        avatarHtml = `<img src="${m.avatar}" alt="Avatar de ${m.name}" loading="lazy"
+        const avatarSrc = upgradeAvatarUrl(m.avatar);
+        avatarHtml = `<img src="${avatarSrc}" alt="Avatar de ${m.name}" loading="lazy"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
           <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`;
       } else {
@@ -871,9 +878,12 @@ const CONFIG = {
     const charInfo = getCharInfo(member.name, altsData);
     const alts     = getAltsForMember(member.name, altsData);
 
-    // Avatar header
-    const avatarHtml = member.avatar
-      ? `<img src="${member.avatar}" alt="Avatar de ${member.name}"
+    // Avatar header (upgrade -avatar.jpg → -inset.jpg pour meilleure qualité)
+    const avatarSrcModal = member.avatar
+      ? member.avatar.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1')
+      : null;
+    const avatarHtml = avatarSrcModal
+      ? `<img src="${avatarSrcModal}" alt="Avatar de ${member.name}"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`
       : `<span style="color:${color}">${initials}</span>`;
@@ -928,16 +938,19 @@ const CONFIG = {
     closeBtn.focus();
 
     // Enrichissement asynchrone des alts via Raider.io
+    // Chaque alt peut être sur un realm différent (stocké dans a.realm)
     if (alts.length) {
-      const realm = member.realm || CONFIG.DEFAULT_REALM || 'kirin-tor';
+      const fallbackRealm = member.realm || CONFIG.DEFAULT_REALM || 'kirin-tor';
       alts.forEach(async a => {
-        const data = await fetchRaiderIoAlt(a.name, realm);
+        const altRealm = a.realm || fallbackRealm;
+        const data = await fetchRaiderIoAlt(a.name, altRealm);
         const normA = normWoW(a.name);
         const avEl  = document.getElementById(`alt-av-${normA}`);
         const spEl  = document.getElementById(`alt-sp-${normA}`);
         if (!avEl) return; // modal fermé entre-temps
         if (data?.thumbnail_url) {
-          avEl.innerHTML = `<img src="${data.thumbnail_url}" alt="Avatar de ${a.name}"
+          const altAvatarSrc = data.thumbnail_url.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1');
+          avEl.innerHTML = `<img src="${altAvatarSrc}" alt="Avatar de ${a.name}"
             onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;object-position:top center"/>`;
         }
         if (spEl) {

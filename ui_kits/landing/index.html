@@ -546,10 +546,13 @@ section:nth-of-type(even){background:var(--surface)}
 
 /* ── CONFIG ── */
 const CONFIG = {
+  // URL du bot Discord (serveur Express) — à remplir après déploiement
+  // Ex: 'https://donjons-jambons-bot.railway.app'
+  BOT_API_URL: 'https://bot-d-j.onrender.com',
+
   // Raid-Helper server ID
   RAIDHELPER_SERVER_ID: '1432474143252811861',
   // Si Raid-Helper nécessite une clé API, la mettre ici
-  // (laisser vide si l'endpoint events est public pour ton serveur)
   RAIDHELPER_API_KEY: 'ZFJb5zIm5ckB7V3APsuVH0FY0K3kGfXg57vwj8Rz',
   // Realm pour les avatars Blizzard
   DEFAULT_REALM: 'kirin-tor'
@@ -608,65 +611,96 @@ const CONFIG = {
 
 /* ── 4. MEMBRES ── */
 (function initMembers() {
-  // Données membres — avatar: URL Blizzard ou null (initiales)
-  const MEMBERS = [
-    // Membre réel
-    // Avatar : placer l'image dans assets/avatars/jungso.jpg (script de téléchargement Blizzard à part)
-    { name: 'Jungso',      realm: 'kirin-tor',  class: 'Chasseur de démons', classColor: '#A330C9', role: 'DPS',  rank: 'Tavernier',    avatar: '../../assets/avatars/jungso.jpg' },
-    // Membres fictifs (placeholders)
-    { name: 'Gloribax',    realm: 'kirin-tor',  class: 'Guerrier',     classColor: '#C79C6E', role: 'Tank', rank: 'Tavernier',    avatar: null },
-    { name: 'Zyrielle',    realm: 'kirin-tor',  class: 'Druide',       classColor: '#FF7D0A', role: 'Heal', rank: 'Cuisinier',    avatar: null },
-    { name: 'Thundrak',    realm: 'kirin-tor',  class: 'Chaman',       classColor: '#0070DE', role: 'DPS',  rank: 'Jambonneau',   avatar: null },
-    { name: 'Pétunielle',  realm: 'kirin-tor',  class: 'Prêtre',       classColor: '#FFFFFF', role: 'Heal', rank: 'Cuisinier',    avatar: null },
-    { name: 'Brocéliande', realm: 'kirin-tor',  class: 'Mage',         classColor: '#69CCF0', role: 'DPS',  rank: 'Jambonneau',   avatar: null },
-    { name: 'Garrokax',    realm: 'kirin-tor',  class: 'Chasseur',     classColor: '#ABD473', role: 'DPS',  rank: 'Jambonneau',   avatar: null },
-    { name: 'Solvine',     realm: 'kirin-tor',  class: 'Paladin',      classColor: '#F58CBA', role: 'Tank', rank: 'Cuisinier',    avatar: null },
-    { name: 'Mordrelys',   realm: 'kirin-tor',  class: 'Démoniste',    classColor: '#9482C9', role: 'DPS',  rank: 'Jambon Frais', avatar: null },
-    { name: 'Ambrethel',   realm: 'kirin-tor',  class: 'Moine',        classColor: '#00FF96', role: 'Heal', rank: 'Jambonneau',   avatar: null },
-    { name: 'Vorkael',     realm: 'kirin-tor',  class: 'Chev. Mort',   classColor: '#C41F3B', role: 'Tank', rank: 'Jambonneau',   avatar: null },
-    { name: 'Lucinara',    realm: 'kirin-tor',  class: 'Evoker',       classColor: '#33937F', role: 'DPS',  rank: 'Jambon Frais', avatar: null },
-  ];
+  let MEMBERS = []; // sera rempli par l'API
+  let currentFilter = 'all';
 
   const badgeCls = r => ({ Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' }[r] || '');
 
-  // Construit l'URL avatar Blizzard
-  function blizzardAvatarUrl(name, realm) {
-    const n = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const r = realm.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    return `https://render.worldofwarcraft.com/eu/character/${r}/${n}/avatar`;
-  }
-
   function renderMembers(filter) {
+    currentFilter = filter;
     const grid = document.getElementById('members-grid');
     const list = filter === 'all' ? MEMBERS : MEMBERS.filter(m => m.role === filter);
+
+    if (!list.length) {
+      grid.innerHTML = `<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
+        Aucun membre trouvé pour ce filtre.
+      </p>`;
+      return;
+    }
+
     grid.innerHTML = list.map(m => {
       const initials = m.name.slice(0, 2).toUpperCase();
+      const color    = m.classColor || 'var(--muted)';
       let avatarHtml;
       if (m.avatar) {
         avatarHtml = `<img src="${m.avatar}" alt="Avatar de ${m.name}" loading="lazy"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${m.classColor}">${initials}</span>`;
+          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`;
       } else {
-        avatarHtml = `<span style="color:${m.classColor}">${initials}</span>`;
+        avatarHtml = `<span style="color:${color}">${initials}</span>`;
       }
       return `<article class="member-card">
         <div class="member-avatar">${avatarHtml}</div>
         <p class="member-name">${m.name}</p>
-        <p class="member-class" style="color:${m.classColor}">${m.class}</p>
+        <p class="member-class" style="color:${color}">${m.class || ''}</p>
         <span class="role-badge ${badgeCls(m.role)}">${m.role}</span>
-        <p class="member-rank">${m.rank}</p>
+        <p class="member-rank">${m.rank || ''}</p>
       </article>`;
     }).join('');
   }
 
-  renderMembers('all');
+  function renderLoading() {
+    document.getElementById('members-grid').innerHTML = `
+      <p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
+        Chargement des membres…
+      </p>`;
+  }
+
+  function renderError() {
+    document.getElementById('members-grid').innerHTML = `
+      <p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
+        Impossible de charger les membres.<br>
+        <a href="https://discord.gg/82b37hw6dh" target="_blank" rel="noopener">Voir le Discord ↗</a>
+      </p>`;
+  }
+
+  // Filtres
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
-      btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
       renderMembers(btn.dataset.filter);
     });
   });
+
+  // Chargement depuis l'API bot
+  renderLoading();
+
+  const apiUrl = CONFIG.BOT_API_URL
+    ? `${CONFIG.BOT_API_URL}/api/members`
+    : null;
+
+  if (!apiUrl) {
+    // BOT_API_URL non configuré — grille vide propre
+    MEMBERS = [];
+    renderMembers('all');
+    return;
+  }
+
+  fetch(apiUrl)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      MEMBERS = Array.isArray(data) ? data : [];
+      renderMembers(currentFilter);
+    })
+    .catch(err => {
+      console.warn('[membres] Fetch échoué :', err);
+      renderError();
+    });
 })();
 
 /* ── 5. GALERIE + LIGHTBOX ── */

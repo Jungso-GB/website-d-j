@@ -682,10 +682,16 @@ const CONFIG = {
     return [];
   }
 
-  /** Remplace -avatar.jpg (84px) par -inset.jpg (230px) dans les URLs Blizzard. */
+  /** Remplace -avatar/-inset par -main.jpg (portrait HD) dans les URLs Blizzard render. */
   function upgradeAvatarUrl(url) {
     if (!url) return url;
-    return url.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1');
+    return url.replace(/-(avatar|inset)\.jpg(\?|$)/, '-main.jpg$2');
+  }
+
+  /** Retourne la version -inset.jpg (fallback si -main.jpg échoue). */
+  function fallbackAvatarUrl(url) {
+    if (!url) return url;
+    return url.replace(/-(avatar|inset|main)\.jpg(\?|$)/, '-inset.jpg$2');
   }
 
   /** Normalise un nom WoW comme le fait le bot (sans accents, minuscules). */
@@ -699,10 +705,12 @@ const CONFIG = {
   function updateSubtitle() {
     const sub = document.getElementById('members-subtitle');
     if (!sub) return;
-    const mainCount = MEMBERS.length;
-    // On compte uniquement les alts des membres présents dans MEMBERS
+    // On exclut les Jambons Frais (masqués sur le site)
+    const visibleMembers = MEMBERS.filter(m => m.rank !== 'Jambon Frais');
+    const mainCount = visibleMembers.length;
+    // On compte uniquement les alts des membres visibles
     const relations = ALTS_DATA.relations || {};
-    const altCount  = MEMBERS.reduce((sum, m) => {
+    const altCount  = visibleMembers.reduce((sum, m) => {
       const rel = relations[normWoW(m.name)];
       return sum + (rel?.alts?.length || 0);
     }, 0);
@@ -711,16 +719,21 @@ const CONFIG = {
       return;
     }
     sub.textContent =
-      `${mainCount} perso${mainCount !== 1 ? 's' : ''} principal${mainCount !== 1 ? 'x' : ''}`
+      `${mainCount} perso${mainCount !== 1 ? 's' : ''} principau${mainCount !== 1 ? 'x' : ''}`
       + (altCount > 0 ? ` · ${altCount} reroll${altCount !== 1 ? 's' : ''}` : '');
   }
+
+  // Ordre d'affichage des grades (plus élevé = affiché en premier)
+  const RANK_ORDER = { 'Tavernier': 3, 'Cuisinier': 2, 'Jambonneau': 1 };
 
   function renderMembers(filter) {
     currentFilter = filter;
     const grid = document.getElementById('members-grid');
-    const list = filter === 'all'
-      ? MEMBERS
-      : MEMBERS.filter(m => getRoles(m).includes(filter));
+
+    // Filtrage par rôle puis masquage des Jambons Frais, tri par grade décroissant
+    const list = (filter === 'all' ? MEMBERS : MEMBERS.filter(m => getRoles(m).includes(filter)))
+      .filter(m => m.rank !== 'Jambon Frais')
+      .sort((a, b) => (RANK_ORDER[b.rank] ?? 0) - (RANK_ORDER[a.rank] ?? 0));
 
     if (!list.length) {
       grid.innerHTML = `<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
@@ -735,9 +748,10 @@ const CONFIG = {
 
       let avatarHtml;
       if (m.avatar) {
-        const avatarSrc = upgradeAvatarUrl(m.avatar);
-        avatarHtml = `<img src="${avatarSrc}" alt="Avatar de ${m.name}" loading="lazy"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        const mainSrc   = upgradeAvatarUrl(m.avatar);
+        const insetSrc  = fallbackAvatarUrl(mainSrc);
+        avatarHtml = `<img src="${mainSrc}" data-fallback="${insetSrc}" alt="Avatar de ${m.name}" loading="lazy"
+          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.fallback}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"/>
           <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`;
       } else {
         avatarHtml = `<span style="color:${color}">${initials}</span>`;
@@ -864,16 +878,26 @@ const CONFIG = {
   closeBtn.addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+  /** Cache in-session pour les données Raider.io des alts (évite les re-fetch). */
+  const altDataCache = new Map();
+
   /** Récupère les données Raider.io d'un personnage (thumbnail, classe, spec). */
   async function fetchRaiderIoAlt(name, realm) {
     const realmSlug = (realm || CONFIG.DEFAULT_REALM || 'kirin-tor')
       .toLowerCase().replace(/\s+/g, '-');
+    const cacheKey = `${name.toLowerCase()}@${realmSlug}`;
+    if (altDataCache.has(cacheKey)) return altDataCache.get(cacheKey);
+
     const url = `https://raider.io/api/v1/characters/profile?region=eu&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=thumbnail_url,active_spec_name,class`;
     try {
       const r = await fetch(url);
-      if (!r.ok) return null;
-      return await r.json();
-    } catch { return null; }
+      const data = r.ok ? await r.json() : null;
+      altDataCache.set(cacheKey, data);
+      return data;
+    } catch {
+      altDataCache.set(cacheKey, null);
+      return null;
+    }
   }
 
   /** Retourne la liste des alts d'un membre (via son nom normalisé). */
@@ -938,13 +962,12 @@ const CONFIG = {
       : (member.role ? [member.role] : []);
     const profs    = Array.isArray(member.professions) ? member.professions : [];
 
-    // Avatar header (upgrade -avatar.jpg → -inset.jpg pour meilleure qualité)
-    const avatarSrcModal = member.avatar
-      ? member.avatar.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1')
-      : null;
-    const avatarHtml = avatarSrcModal
-      ? `<img src="${avatarSrcModal}" alt="Avatar de ${member.name}"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+    // Avatar header — on tente -main.jpg (HD), fallback -inset.jpg, puis initiales
+    const avatarMainSrc  = member.avatar ? member.avatar.replace(/-(avatar|inset)\.jpg(\?|$)/, '-main.jpg$2') : null;
+    const avatarInsetSrc = member.avatar ? member.avatar.replace(/-(avatar|inset|main)\.jpg(\?|$)/, '-inset.jpg$2') : null;
+    const avatarHtml = avatarMainSrc
+      ? `<img src="${avatarMainSrc}" data-fallback="${avatarInsetSrc}" alt="Avatar de ${member.name}"
+           onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.fallback}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"/>
          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`
       : `<span style="color:${color}">${initials}</span>`;
 
@@ -1022,26 +1045,36 @@ const CONFIG = {
     document.body.style.overflow = 'hidden';
     closeBtn.focus();
 
-    // Enrichissement asynchrone des alts via Raider.io
-    // Chaque alt peut être sur un realm différent (stocké dans a.realm)
+    // Enrichissement séquentiel des alts via Raider.io
+    // Séquentiel (pas parallèle) pour éviter le rate-limiting Raider.io sur les grosses listes.
+    // Un cache in-session évite les re-fetch si le modal est rouvert.
     if (alts.length) {
-      const fallbackRealm = member.realm || CONFIG.DEFAULT_REALM || 'kirin-tor';
-      alts.forEach(async a => {
-        const altRealm = a.realm || fallbackRealm;
-        const data = await fetchRaiderIoAlt(a.name, altRealm);
-        const normA = normWoW(a.name);
-        const avEl  = document.getElementById(`alt-av-${normA}`);
-        const spEl  = document.getElementById(`alt-sp-${normA}`);
-        if (!avEl) return; // modal fermé entre-temps
-        if (data?.thumbnail_url) {
-          const altAvatarSrc = data.thumbnail_url.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1');
-          avEl.innerHTML = `<img src="${altAvatarSrc}" alt="Avatar de ${a.name}"
-            onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;object-position:top center"/>`;
+      (async () => {
+        const fallbackRealm = member.realm || CONFIG.DEFAULT_REALM || 'kirin-tor';
+        for (const a of alts) {
+          // Vérifier que le modal est toujours ouvert avant chaque fetch
+          if (!document.getElementById(`alt-av-${normWoW(a.name)}`)) break;
+
+          const altRealm = a.realm || fallbackRealm;
+          const data = await fetchRaiderIoAlt(a.name, altRealm);
+
+          const normA = normWoW(a.name);
+          const avEl  = document.getElementById(`alt-av-${normA}`);
+          const spEl  = document.getElementById(`alt-sp-${normA}`);
+          if (!avEl) break; // modal fermé pendant le fetch
+
+          if (data?.thumbnail_url) {
+            const altAvatarSrc = data.thumbnail_url.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1');
+            avEl.innerHTML = `<img src="${altAvatarSrc}" alt="Avatar de ${a.name}"
+              onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;object-position:top center"/>`;
+          }
+          if (spEl) {
+            spEl.textContent = [data?.active_spec_name, data?.class].filter(Boolean).join(' · ') || '—';
+          }
+          // Délai entre chaque requête pour respecter le rate-limit de Raider.io
+          await new Promise(r => setTimeout(r, 120));
         }
-        if (spEl) {
-          spEl.textContent = [data?.active_spec_name, data?.class].filter(Boolean).join(' · ') || '—';
-        }
-      });
+      })();
     }
   };
 })();

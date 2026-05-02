@@ -333,6 +333,7 @@ section:nth-of-type(even){background:var(--surface)}
       <li><a href="#accueil">Accueil</a></li>
       <li><a href="#about">La Guilde</a></li>
       <li><a href="#activities">Activités</a></li>
+      <li><a href="#events">Événements</a></li>
       <li><a href="#members">Membres</a></li>
       <li><a href="#gallery">Galerie</a></li>
       <li><a href="#faq">FAQ</a></li>
@@ -682,16 +683,10 @@ const CONFIG = {
     return [];
   }
 
-  /** Remplace -avatar/-inset par -main.jpg (portrait HD) dans les URLs Blizzard render. */
+  /** Normalise les URLs Blizzard render vers -inset.jpg (230px, fiable). */
   function upgradeAvatarUrl(url) {
     if (!url) return url;
-    return url.replace(/-(avatar|inset)\.jpg(\?|$)/, '-main.jpg$2');
-  }
-
-  /** Retourne la version -inset.jpg (fallback si -main.jpg échoue). */
-  function fallbackAvatarUrl(url) {
-    if (!url) return url;
-    return url.replace(/-(avatar|inset|main)\.jpg(\?|$)/, '-inset.jpg$2');
+    return url.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1');
   }
 
   /** Normalise un nom WoW comme le fait le bot (sans accents, minuscules). */
@@ -748,10 +743,9 @@ const CONFIG = {
 
       let avatarHtml;
       if (m.avatar) {
-        const mainSrc   = upgradeAvatarUrl(m.avatar);
-        const insetSrc  = fallbackAvatarUrl(mainSrc);
-        avatarHtml = `<img src="${mainSrc}" data-fallback="${insetSrc}" alt="Avatar de ${m.name}" loading="lazy"
-          onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.fallback}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"/>
+        const avatarSrc = upgradeAvatarUrl(m.avatar);
+        avatarHtml = `<img src="${avatarSrc}" alt="Avatar de ${m.name}" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
           <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`;
       } else {
         avatarHtml = `<span style="color:${color}">${initials}</span>`;
@@ -878,24 +872,55 @@ const CONFIG = {
   closeBtn.addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  /** Cache in-session pour les données Raider.io des alts (évite les re-fetch). */
-  const altDataCache = new Map();
+  // ── Cache Raider.io alts ────────────────────────────────────────────
+  // Double cache : mémoire (session) + localStorage (24h)
+  const ALT_LS_KEY = 'dj_alt_cache_v1';
+  const ALT_LS_TTL = 24 * 60 * 60 * 1000; // 24h
+  const altMemCache = new Map();
 
-  /** Récupère les données Raider.io d'un personnage (thumbnail, classe, spec). */
+  function lsGetAlt(key) {
+    try {
+      const store = JSON.parse(localStorage.getItem(ALT_LS_KEY) || '{}');
+      const item  = store[key];
+      if (!item || Date.now() - item.ts > ALT_LS_TTL) return undefined;
+      return item.data;
+    } catch { return undefined; }
+  }
+  function lsSetAlt(key, data) {
+    try {
+      const store = JSON.parse(localStorage.getItem(ALT_LS_KEY) || '{}');
+      store[key]  = { data, ts: Date.now() };
+      // Nettoyer les entrées expirées avant de sauvegarder
+      for (const k of Object.keys(store)) {
+        if (Date.now() - store[k].ts > ALT_LS_TTL) delete store[k];
+      }
+      localStorage.setItem(ALT_LS_KEY, JSON.stringify(store));
+    } catch {}
+  }
+
+  /** Récupère les données Raider.io d'un personnage (thumbnail, classe, spec).
+   *  Cache 24h en localStorage pour éviter les re-fetch au rechargement. */
   async function fetchRaiderIoAlt(name, realm) {
     const realmSlug = (realm || CONFIG.DEFAULT_REALM || 'kirin-tor')
       .toLowerCase().replace(/\s+/g, '-');
     const cacheKey = `${name.toLowerCase()}@${realmSlug}`;
-    if (altDataCache.has(cacheKey)) return altDataCache.get(cacheKey);
+
+    // 1. Cache mémoire (même session)
+    if (altMemCache.has(cacheKey)) return altMemCache.get(cacheKey);
+    // 2. Cache localStorage (24h)
+    const lsCached = lsGetAlt(cacheKey);
+    if (lsCached !== undefined) { altMemCache.set(cacheKey, lsCached); return lsCached; }
 
     const url = `https://raider.io/api/v1/characters/profile?region=eu&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=thumbnail_url,active_spec_name,class`;
     try {
-      const r = await fetch(url);
+      const r    = await fetch(url);
       const data = r.ok ? await r.json() : null;
-      altDataCache.set(cacheKey, data);
+      altMemCache.set(cacheKey, data);
+      lsSetAlt(cacheKey, data);
       return data;
     } catch {
-      altDataCache.set(cacheKey, null);
+      altMemCache.set(cacheKey, null);
+      lsSetAlt(cacheKey, null);
       return null;
     }
   }
@@ -918,10 +943,48 @@ const CONFIG = {
     return [];
   }
 
-  /** Retourne les infos de join du personnage depuis ALTS_DATA.characters. */
+  /**
+   * Convertit une date GRM en timestamp numérique pour comparaison.
+   * "29 nov '25 18h28" → ms epoch
+   */
+  function parseGrmTimestamp(dateStr) {
+    if (!dateStr) return Infinity;
+    const months = { jan:0,fev:1,mar:2,avr:3,mai:4,juin:5,jul:6,juil:6,aou:7,aout:7,sep:8,oct:9,nov:10,dec:11 };
+    const m = dateStr.match(/(\d+)\s+([\p{L}]+)/u);
+    if (!m) return Infinity;
+    const day  = parseInt(m[1]);
+    const mKey = m[2].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const mon  = months[mKey] ?? months[mKey.slice(0,4)] ?? months[mKey.slice(0,3)] ?? 0;
+    const yr   = dateStr.match(/'(\d{2})/);
+    return new Date(yr ? 2000 + parseInt(yr[1]) : new Date().getFullYear(), mon, day).getTime();
+  }
+
+  /**
+   * Retourne les infos de join d'un membre :
+   * - joinDate = date la plus ancienne parmi le personnage principal ET tous ses alts
+   * - invitedBy = celui du personnage principal (le plus pertinent)
+   */
   function getCharInfo(memberName, altsData) {
-    const norm = normWoW(memberName);
-    return altsData.characters?.[norm] || null;
+    const norm     = normWoW(memberName);
+    const mainInfo = altsData.characters?.[norm] || null;
+
+    const rel      = altsData.relations?.[norm];
+    const altNorms = (rel?.alts || []).map(a => a.normalized);
+
+    if (!altNorms.length) return mainInfo;
+
+    // Cherche la date la plus ancienne parmi main + alts
+    let oldestDate = mainInfo?.joinDate || null;
+    let oldestTs   = parseGrmTimestamp(oldestDate);
+
+    for (const n of altNorms) {
+      const info = altsData.characters?.[n];
+      if (!info?.joinDate) continue;
+      const ts = parseGrmTimestamp(info.joinDate);
+      if (ts < oldestTs) { oldestTs = ts; oldestDate = info.joinDate; }
+    }
+
+    return { joinDate: oldestDate, invitedBy: mainInfo?.invitedBy || null };
   }
 
   /**
@@ -962,12 +1025,13 @@ const CONFIG = {
       : (member.role ? [member.role] : []);
     const profs    = Array.isArray(member.professions) ? member.professions : [];
 
-    // Avatar header — on tente -main.jpg (HD), fallback -inset.jpg, puis initiales
-    const avatarMainSrc  = member.avatar ? member.avatar.replace(/-(avatar|inset)\.jpg(\?|$)/, '-main.jpg$2') : null;
-    const avatarInsetSrc = member.avatar ? member.avatar.replace(/-(avatar|inset|main)\.jpg(\?|$)/, '-inset.jpg$2') : null;
-    const avatarHtml = avatarMainSrc
-      ? `<img src="${avatarMainSrc}" data-fallback="${avatarInsetSrc}" alt="Avatar de ${member.name}"
-           onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src=this.dataset.fallback}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"/>
+    // Avatar header modal
+    const avatarSrcModal = member.avatar
+      ? member.avatar.replace(/-avatar\.jpg(\?|$)/, '-inset.jpg$1')
+      : null;
+    const avatarHtml = avatarSrcModal
+      ? `<img src="${avatarSrcModal}" alt="Avatar de ${member.name}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
          <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`
       : `<span style="color:${color}">${initials}</span>`;
 
@@ -1158,7 +1222,9 @@ const CONFIG = {
       const type  = guessType(ev.title);
       const ts    = ev.startTime || ev.date;
       const dateStr = ts ? formatDate(ts) : '—';
-      const filled = ev.signUpCount  || ev.slots?.filled || 0;
+      // signUps est un tableau envoyé par le bot (IncludeSignUps: true)
+      const signUpsArr = Array.isArray(ev.signUps) ? ev.signUps : [];
+      const filled = signUpsArr.filter(s => s.className !== 'Absence').length || ev.signUpCount || 0;
       const total  = ev.signUpLimit  || ev.slots?.total  || 0;
       const hasSlots = total > 0;
       const pct = hasSlots ? Math.min(100, Math.round(filled / total * 100)) : 0;
@@ -1203,33 +1269,26 @@ const CONFIG = {
     <p class="events-status-sub">Connexion à Raid-Helper en cours…</p>
   </div>`;
 
-  // ── FETCH Raid-Helper API ──
-  async function fetchRaidHelperEvents() {
-    const SERVER_ID = CONFIG.RAIDHELPER_SERVER_ID;
-    const API_KEY   = CONFIG.RAIDHELPER_API_KEY;
-    const url = `https://raid-helper.dev/api/v2/servers/${SERVER_ID}/events`;
+  // ── FETCH via le bot (évite CORS + mis en cache 1×/jour côté serveur) ──
+  async function loadEvents() {
+    const apiUrl = CONFIG.BOT_API_URL ? `${CONFIG.BOT_API_URL}/api/events` : null;
+    if (!apiUrl) { setBadge('mock', 'Non configuré'); renderEvents([]); return; }
 
-    const headers = { 'Content-Type': 'application/json' };
-    if (API_KEY) headers['Authorization'] = API_KEY;
-
-    const res = await fetch(url, { headers });
+    const res  = await fetch(apiUrl);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-
-    // L'API retourne { postedEvents: [...] } ou { scheduledEvents: [...] }
-    return data.postedEvents || data.scheduledEvents || data.events || [];
+    return data.events || [];
   }
 
-  fetchRaidHelperEvents()
+  loadEvents()
     .then(events => {
-      setBadge('live', '● Live · Raid-Helper');
+      setBadge('live', '● Synchro · Raid-Helper');
       renderEvents(events);
     })
     .catch(err => {
-      console.warn('[D&J] Raid-Helper fetch failed:', err.message);
-      // CORS probable depuis le navigateur — afficher état vide propre
+      console.warn('[D&J] Events fetch failed:', err.message);
       setBadge('error', 'Hors ligne');
-      renderEvents([]); // Affiche le message "aucun événement"
+      renderEvents([]);
     });
 })();
 

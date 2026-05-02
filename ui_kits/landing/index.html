@@ -124,23 +124,26 @@ section:nth-of-type(even){background:var(--surface)}
 .filter-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-family:var(--font-body);font-size:0.85rem;padding:7px 18px;border-radius:20px;cursor:pointer;transition:all var(--tr)}
 .filter-btn:hover,.filter-btn.active{background:var(--gold);border-color:var(--gold);color:#0f0b07;font-weight:700}
 .members-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-.member-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 20px 22px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr);cursor:pointer}
+.member-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:24px 16px 18px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr);cursor:pointer}
 .member-card:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(201,146,42,0.15);transform:translateY(-3px)}
-/* Avatar — grand format */
-.member-avatar{width:120px;height:120px;border-radius:50%;border:2px solid var(--border);margin:0 auto 18px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-size:2rem;font-weight:700;background:var(--surface);transition:border-color var(--tr),box-shadow var(--tr)}
+/* Avatar — grand format (+25%) */
+.member-avatar{width:150px;height:150px;border-radius:50%;border:2px solid var(--border);margin:0 auto 14px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-size:2.4rem;font-weight:700;background:var(--surface);transition:border-color var(--tr),box-shadow var(--tr)}
 .member-card:hover .member-avatar{border-color:var(--gold);box-shadow:0 0 18px rgba(201,146,42,0.3)}
 .member-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
-/* Titre fun — mis en avant */
-.member-titre{font-size:0.82rem;color:var(--gold);font-style:italic;margin-bottom:6px;line-height:1.3;min-height:1.2em}
 /* Nom du personnage */
-.member-name{font-family:var(--font-title);font-size:1rem;color:var(--gold-light);margin-bottom:4px;letter-spacing:0.03em}
-.member-class{font-size:0.78rem;font-weight:700;margin-bottom:8px}
-.role-badge{display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px}
+.member-name{font-family:var(--font-title);font-size:1rem;color:var(--gold-light);margin-bottom:2px;letter-spacing:0.03em}
+/* Titre fun — sous le nom */
+.member-titre{font-size:0.78rem;color:var(--gold);font-style:italic;margin-bottom:8px;line-height:1.3;min-height:1.1em}
+/* Ligne classe + rôles sur la même ligne */
+.member-footer{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.member-class-text{font-size:0.72rem;font-weight:700;line-height:1}
+.member-roles{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.role-badge{display:inline-block;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase}
 .badge-tank{background:rgba(26,61,107,0.6);color:#7aaef5;border:1px solid rgba(122,174,245,0.3)}
 .badge-heal{background:rgba(20,90,40,0.5);color:#5dcc7a;border:1px solid rgba(93,204,122,0.3)}
 .badge-dps{background:rgba(139,26,26,0.5);color:#f06060;border:1px solid rgba(240,96,96,0.3)}
 /* Grade officiel — discret */
-.member-rank{font-size:0.7rem;color:var(--muted);font-style:italic;opacity:0.75}
+.member-rank{font-size:0.68rem;color:var(--muted);font-style:italic;opacity:0.75}
 .members-armory{text-align:center;margin-top:36px}
 .members-armory a{font-size:0.85rem;color:var(--muted);border-bottom:1px dashed var(--border)}
 .members-armory a:hover{color:var(--gold-light)}
@@ -177,6 +180,12 @@ section:nth-of-type(even){background:var(--surface)}
 .modal-meta-row{display:flex;gap:6px;font-size:0.8rem;color:var(--muted);margin-top:5px;align-items:flex-start;flex-wrap:wrap}
 .modal-meta-row b{color:var(--text);font-weight:600}
 .modal-no-alts{font-size:0.85rem;color:var(--muted);font-style:italic;padding:8px 0}
+/* Citation */
+.modal-citation{margin:16px 0 0;padding:12px 16px;border-left:3px solid var(--gold);background:var(--surface-2);border-radius:0 6px 6px 0}
+.modal-citation p{font-style:italic;color:var(--text);font-size:0.88rem;line-height:1.6}
+/* Métiers */
+.modal-professions{display:flex;flex-wrap:wrap;gap:7px}
+.profession-badge{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:3px 10px;font-size:0.72rem;color:var(--text);letter-spacing:0.03em}
 @media(max-width:540px){.modal-header{flex-direction:column;align-items:flex-start;gap:16px}.modal-box{padding:24px 18px}}
 
 /* GALLERY */
@@ -663,7 +672,15 @@ const CONFIG = {
   let ALTS_DATA     = { relations: {}, altOf: {}, characters: {} };
   let currentFilter = 'all';
 
-  const badgeCls = r => ({ Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' }[r] || '');
+  const BADGE_CLS = window.BADGE_CLS = { Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' };
+  const badgeCls  = r => BADGE_CLS[r] || '';
+
+  /** Retourne le tableau de rôles d'un membre (compat ancien format role:string). */
+  function getRoles(m) {
+    if (Array.isArray(m.roles) && m.roles.length) return m.roles;
+    if (m.role) return [m.role];
+    return [];
+  }
 
   /** Remplace -avatar.jpg (84px) par -inset.jpg (230px) dans les URLs Blizzard. */
   function upgradeAvatarUrl(url) {
@@ -696,7 +713,9 @@ const CONFIG = {
   function renderMembers(filter) {
     currentFilter = filter;
     const grid = document.getElementById('members-grid');
-    const list = filter === 'all' ? MEMBERS : MEMBERS.filter(m => m.role === filter);
+    const list = filter === 'all'
+      ? MEMBERS
+      : MEMBERS.filter(m => getRoles(m).includes(filter));
 
     if (!list.length) {
       grid.innerHTML = `<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
@@ -723,12 +742,21 @@ const CONFIG = {
         ? `<p class="member-titre">« ${m.titre} »</p>`
         : `<p class="member-titre"></p>`;
 
+      const roles       = getRoles(m);
+      const rolesBadges = roles.map(r => `<span class="role-badge ${badgeCls(r)}">${r}</span>`).join('');
+      const classHtml   = m.class
+        ? `<span class="member-class-text" style="color:${color}">${m.class}</span>`
+        : '';
+      const separator   = m.class && roles.length ? `<span style="color:var(--border)">·</span>` : '';
+
       return `<article class="member-card" data-id="${m.discordId}" tabindex="0" role="button" aria-label="Voir le profil de ${m.name}">
         <div class="member-avatar">${avatarHtml}</div>
         <p class="member-name">${m.name}</p>
         ${titreHtml}
-        <p class="member-class" style="color:${color}">${m.class || ''}</p>
-        <span class="role-badge ${badgeCls(m.role)}">${m.role}</span>
+        <div class="member-footer">
+          ${classHtml}${separator}
+          <div class="member-roles">${rolesBadges}</div>
+        </div>
         <p class="member-rank">${m.rank || ''}</p>
       </article>`;
     }).join('');
@@ -867,6 +895,29 @@ const CONFIG = {
     return altsData.characters?.[norm] || null;
   }
 
+  /**
+   * Convertit une date GRM "29 nov '25 18h28" en "29/11/2025".
+   */
+  function formatGrmDate(dateStr) {
+    if (!dateStr) return null;
+    const months = {
+      jan:'01', fev:'02', fév:'02', mar:'03', avr:'04',
+      mai:'05', juin:'06', jul:'07', juil:'07',
+      aou:'08', aoû:'08', sep:'09', oct:'10', nov:'11', dec:'12', déc:'12'
+    };
+    const m = dateStr.match(/(\d+)\s+(\w+)/);
+    if (!m) return dateStr;
+    const day  = m[1].padStart(2, '0');
+    const mKey = m[2].toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')  // enlève accents
+      .slice(0, 4);                                       // "nov", "juil", etc.
+    const mon  = months[mKey] || months[mKey.slice(0,3)] || '??';
+    // Année : chercher '25 → 2025
+    const yearMatch = dateStr.match(/'(\d{2})/);
+    const year = yearMatch ? '20' + yearMatch[1] : new Date().getFullYear();
+    return `${day}/${mon}/${year}`;
+  }
+
   window.openMemberModal = function(member) {
     // Récupérer ALTS_DATA depuis la fermeture de initMembers
     // On le récupère depuis la variable globale exposée ci-dessous
@@ -874,9 +925,12 @@ const CONFIG = {
 
     const color    = member.classColor || 'var(--muted)';
     const initials = member.name.slice(0, 2).toUpperCase();
-    const badgeCls = { Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' }[member.role] || '';
     const charInfo = getCharInfo(member.name, altsData);
     const alts     = getAltsForMember(member.name, altsData);
+    const roles    = Array.isArray(member.roles) && member.roles.length
+      ? member.roles
+      : (member.role ? [member.role] : []);
+    const profs    = Array.isArray(member.professions) ? member.professions : [];
 
     // Avatar header (upgrade -avatar.jpg → -inset.jpg pour meilleure qualité)
     const avatarSrcModal = member.avatar
@@ -893,11 +947,23 @@ const CONFIG = {
     if (charInfo?.joinDate || charInfo?.invitedBy) {
       joinHtml = `<div class="modal-section">
         <p class="modal-section-title">Infos</p>`;
-      if (charInfo.joinDate)
-        joinHtml += `<p class="modal-meta-row">📅 A rejoint le <b>${charInfo.joinDate}</b></p>`;
+      if (charInfo.joinDate) {
+        const dateFmt = formatGrmDate(charInfo.joinDate);
+        joinHtml += `<p class="modal-meta-row">📅 A rejoint le <b>${dateFmt}</b></p>`;
+      }
       if (charInfo.invitedBy && charInfo.invitedBy !== 'Inconnue')
         joinHtml += `<p class="modal-meta-row">🤝 Invité(e) par <b>${charInfo.invitedBy}</b></p>`;
       joinHtml += `</div>`;
+    }
+
+    // Métiers
+    let profsHtml = '';
+    if (profs.length) {
+      const badges = profs.map(p => `<span class="profession-badge">${p}</span>`).join('');
+      profsHtml = `<div class="modal-section">
+        <p class="modal-section-title">Métiers</p>
+        <div class="modal-professions">${badges}</div>
+      </div>`;
     }
 
     // Alts skeleton (on les enrichit après)
@@ -916,6 +982,17 @@ const CONFIG = {
       </div>`;
     }
 
+    // Citation
+    const citationHtml = member.citation
+      ? `<div class="modal-citation"><p>« ${member.citation} »</p></div>`
+      : '';
+
+    // Badges de rôles (multiples possible)
+    const BC = window.BADGE_CLS || { Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' };
+    const rolesBadgesHtml = roles
+      .map(r => `<span class="role-badge ${BC[r] || ''}">${r}</span>`)
+      .join('');
+
     body.innerHTML = `
       <div class="modal-header">
         <div class="modal-avatar-wrap">${avatarHtml}</div>
@@ -924,12 +1001,14 @@ const CONFIG = {
           ${member.titre ? `<p class="modal-titre-text">« ${member.titre} »</p>` : ''}
           <div class="modal-badges">
             ${member.class ? `<span class="modal-class-text" style="color:${color}">⬥ ${member.class}</span>` : ''}
-            <span class="role-badge ${badgeCls}">${member.role}</span>
+            ${rolesBadgesHtml}
             <span class="modal-rank-text">${member.rank || ''}</span>
           </div>
         </div>
       </div>
+      ${citationHtml}
       ${joinHtml}
+      ${profsHtml}
       ${altsHtml}
     `;
 

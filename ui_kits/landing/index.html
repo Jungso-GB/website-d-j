@@ -123,22 +123,30 @@ section:nth-of-type(even){background:var(--surface)}
 .member-filters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
 .filter-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-family:var(--font-body);font-size:0.85rem;padding:7px 18px;border-radius:20px;cursor:pointer;transition:all var(--tr)}
 .filter-btn:hover,.filter-btn.active{background:var(--gold);border-color:var(--gold);color:#0f0b07;font-weight:700}
-.members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:20px}
-.member-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 14px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr)}
-.member-card:hover{border-color:var(--gold);box-shadow:0 0 18px rgba(201,146,42,0.12)}
-.member-avatar{width:68px;height:68px;border-radius:50%;border:2px solid var(--border);margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-size:1.3rem;font-weight:700;background:var(--surface);transition:border-color var(--tr)}
-.member-card:hover .member-avatar{border-color:var(--gold)}
-.member-avatar img{width:100%;height:100%;object-fit:cover}
-.member-name{font-family:var(--font-title);font-size:0.85rem;color:var(--gold-light);margin-bottom:4px;letter-spacing:0.03em}
-.member-class{font-size:0.78rem;font-weight:700;margin-bottom:6px}
-.role-badge{display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
+.members-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.member-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 20px 22px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr)}
+.member-card:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(201,146,42,0.15);transform:translateY(-3px)}
+/* Avatar — grand format */
+.member-avatar{width:120px;height:120px;border-radius:50%;border:2px solid var(--border);margin:0 auto 18px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-size:2rem;font-weight:700;background:var(--surface);transition:border-color var(--tr),box-shadow var(--tr)}
+.member-card:hover .member-avatar{border-color:var(--gold);box-shadow:0 0 18px rgba(201,146,42,0.3)}
+.member-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
+/* Titre fun — mis en avant */
+.member-titre{font-size:0.82rem;color:var(--gold);font-style:italic;margin-bottom:6px;line-height:1.3;min-height:1.2em}
+/* Nom du personnage */
+.member-name{font-family:var(--font-title);font-size:1rem;color:var(--gold-light);margin-bottom:4px;letter-spacing:0.03em}
+.member-class{font-size:0.78rem;font-weight:700;margin-bottom:8px}
+.role-badge{display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px}
 .badge-tank{background:rgba(26,61,107,0.6);color:#7aaef5;border:1px solid rgba(122,174,245,0.3)}
 .badge-heal{background:rgba(20,90,40,0.5);color:#5dcc7a;border:1px solid rgba(93,204,122,0.3)}
 .badge-dps{background:rgba(139,26,26,0.5);color:#f06060;border:1px solid rgba(240,96,96,0.3)}
-.member-rank{font-size:0.72rem;color:var(--muted);font-style:italic}
+/* Grade officiel — discret */
+.member-rank{font-size:0.7rem;color:var(--muted);font-style:italic;opacity:0.75}
 .members-armory{text-align:center;margin-top:36px}
 .members-armory a{font-size:0.85rem;color:var(--muted);border-bottom:1px dashed var(--border)}
 .members-armory a:hover{color:var(--gold-light)}
+/* Responsive membres */
+@media(max-width:900px){.members-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.members-grid{grid-template-columns:repeat(1,1fr)}}
 
 /* GALLERY */
 .gallery-grid{columns:1;gap:14px}
@@ -631,6 +639,8 @@ const CONFIG = {
     grid.innerHTML = list.map(m => {
       const initials = m.name.slice(0, 2).toUpperCase();
       const color    = m.classColor || 'var(--muted)';
+
+      // Avatar : image Raider.io ou initiales en fallback
       let avatarHtml;
       if (m.avatar) {
         avatarHtml = `<img src="${m.avatar}" alt="Avatar de ${m.name}" loading="lazy"
@@ -639,8 +649,15 @@ const CONFIG = {
       } else {
         avatarHtml = `<span style="color:${color}">${initials}</span>`;
       }
+
+      // Titre fun (optionnel) — affiché en premier si présent
+      const titreHtml = m.titre
+        ? `<p class="member-titre">« ${m.titre} »</p>`
+        : `<p class="member-titre"></p>`;
+
       return `<article class="member-card">
         <div class="member-avatar">${avatarHtml}</div>
+        ${titreHtml}
         <p class="member-name">${m.name}</p>
         <p class="member-class" style="color:${color}">${m.class || ''}</p>
         <span class="role-badge ${badgeCls(m.role)}">${m.role}</span>

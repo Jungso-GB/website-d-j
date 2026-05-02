@@ -124,7 +124,7 @@ section:nth-of-type(even){background:var(--surface)}
 .filter-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-family:var(--font-body);font-size:0.85rem;padding:7px 18px;border-radius:20px;cursor:pointer;transition:all var(--tr)}
 .filter-btn:hover,.filter-btn.active{background:var(--gold);border-color:var(--gold);color:#0f0b07;font-weight:700}
 .members-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-.member-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 20px 22px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr)}
+.member-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 20px 22px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr);cursor:pointer}
 .member-card:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(201,146,42,0.15);transform:translateY(-3px)}
 /* Avatar — grand format */
 .member-avatar{width:120px;height:120px;border-radius:50%;border:2px solid var(--border);margin:0 auto 18px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-size:2rem;font-weight:700;background:var(--surface);transition:border-color var(--tr),box-shadow var(--tr)}
@@ -147,6 +147,37 @@ section:nth-of-type(even){background:var(--surface)}
 /* Responsive membres */
 @media(max-width:900px){.members-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.members-grid{grid-template-columns:repeat(1,1fr)}}
+
+/* ── MODAL PROFIL MEMBRE ── */
+.member-modal{display:none;position:fixed;inset:0;z-index:3000;align-items:center;justify-content:center;padding:20px}
+.member-modal.open{display:flex}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.88);cursor:pointer;backdrop-filter:blur(3px)}
+.modal-box{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px;max-width:600px;width:100%;max-height:88vh;overflow-y:auto;z-index:1;box-shadow:0 12px 60px rgba(0,0,0,0.85)}
+.modal-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--muted);font-size:1.8rem;line-height:1;cursor:pointer;transition:color var(--tr);padding:2px 6px;border-radius:4px}
+.modal-close:hover{color:var(--gold-light)}
+.modal-header{display:flex;gap:24px;align-items:center;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--border)}
+.modal-avatar-wrap{width:90px;height:90px;border-radius:50%;border:2px solid var(--gold);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--surface-2);font-family:var(--font-title);font-size:1.7rem;font-weight:700}
+.modal-avatar-wrap img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.modal-info{min-width:0}
+.modal-name{font-family:var(--font-title);font-size:1.25rem;color:var(--gold-light);margin-bottom:2px;letter-spacing:0.03em}
+.modal-titre-text{font-size:0.8rem;color:var(--gold);font-style:italic;margin-bottom:8px}
+.modal-badges{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.modal-class-text{font-size:0.78rem;font-weight:700}
+.modal-rank-text{font-size:0.72rem;color:var(--muted);font-style:italic}
+.modal-section{margin-top:22px}
+.modal-section-title{font-family:var(--font-title);font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.modal-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.modal-alts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px}
+.alt-card{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:12px 8px;text-align:center;transition:border-color var(--tr)}
+.alt-card:hover{border-color:var(--gold)}
+.alt-avatar{width:50px;height:50px;border-radius:50%;overflow:hidden;margin:0 auto 8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1rem;font-family:var(--font-title);font-weight:700}
+.alt-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.alt-name{font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.3;word-break:break-word}
+.alt-spec{font-size:0.63rem;color:var(--muted);line-height:1.4}
+.modal-meta-row{display:flex;gap:6px;font-size:0.8rem;color:var(--muted);margin-top:5px;align-items:flex-start;flex-wrap:wrap}
+.modal-meta-row b{color:var(--text);font-weight:600}
+.modal-no-alts{font-size:0.85rem;color:var(--muted);font-style:italic;padding:8px 0}
+@media(max-width:540px){.modal-header{flex-direction:column;align-items:flex-start;gap:16px}.modal-box{padding:24px 18px}}
 
 /* GALLERY */
 .gallery-grid{columns:1;gap:14px}
@@ -406,7 +437,7 @@ section:nth-of-type(even){background:var(--surface)}
   <div class="container">
     <header class="section-header reveal">
       <h2 class="section-title">Les Jambons</h2>
-      <p class="section-subtitle">Les membres actifs de la guilde</p>
+      <p class="section-subtitle" id="members-subtitle">Les membres actifs de la guilde</p>
       <div class="ornament"><span class="ornament-diamond"></span></div>
     </header>
     <div class="member-filters" role="group" aria-label="Filtrer par rôle">
@@ -619,10 +650,33 @@ const CONFIG = {
 
 /* ── 4. MEMBRES ── */
 (function initMembers() {
-  let MEMBERS = []; // sera rempli par l'API
+  let MEMBERS       = [];
+  let ALTS_DATA     = { relations: {}, altOf: {}, characters: {} };
   let currentFilter = 'all';
 
   const badgeCls = r => ({ Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' }[r] || '');
+
+  /** Normalise un nom WoW comme le fait le bot (sans accents, minuscules). */
+  function normWoW(name) {
+    return String(name).toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9-]/g, '');
+  }
+
+  /** Met à jour le sous-titre avec les compteurs perso principaux / rerolls. */
+  function updateSubtitle() {
+    const sub = document.getElementById('members-subtitle');
+    if (!sub) return;
+    const mainCount = MEMBERS.length;
+    const altCount  = Object.keys(ALTS_DATA.altOf || {}).length;
+    if (mainCount === 0 && altCount === 0) {
+      sub.textContent = 'Les membres actifs de la guilde';
+      return;
+    }
+    sub.textContent =
+      `${mainCount} perso${mainCount !== 1 ? 's' : ''} principal${mainCount !== 1 ? 'x' : ''}`
+      + (altCount > 0 ? ` · ${altCount} reroll${altCount !== 1 ? 's' : ''}` : '');
+  }
 
   function renderMembers(filter) {
     currentFilter = filter;
@@ -640,7 +694,6 @@ const CONFIG = {
       const initials = m.name.slice(0, 2).toUpperCase();
       const color    = m.classColor || 'var(--muted)';
 
-      // Avatar : image Raider.io ou initiales en fallback
       let avatarHtml;
       if (m.avatar) {
         avatarHtml = `<img src="${m.avatar}" alt="Avatar de ${m.name}" loading="lazy"
@@ -650,15 +703,14 @@ const CONFIG = {
         avatarHtml = `<span style="color:${color}">${initials}</span>`;
       }
 
-      // Titre fun (optionnel) — affiché en premier si présent
       const titreHtml = m.titre
         ? `<p class="member-titre">« ${m.titre} »</p>`
         : `<p class="member-titre"></p>`;
 
-      return `<article class="member-card">
+      return `<article class="member-card" data-id="${m.discordId}" tabindex="0" role="button" aria-label="Voir le profil de ${m.name}">
         <div class="member-avatar">${avatarHtml}</div>
-        ${titreHtml}
         <p class="member-name">${m.name}</p>
+        ${titreHtml}
         <p class="member-class" style="color:${color}">${m.class || ''}</p>
         <span class="role-badge ${badgeCls(m.role)}">${m.role}</span>
         <p class="member-rank">${m.rank || ''}</p>
@@ -672,7 +724,6 @@ const CONFIG = {
         Chargement des membres…
       </p>`;
   }
-
   function renderError() {
     document.getElementById('members-grid').innerHTML = `
       <p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
@@ -681,7 +732,7 @@ const CONFIG = {
       </p>`;
   }
 
-  // Filtres
+  // ── Filtres ──
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => {
@@ -694,30 +745,198 @@ const CONFIG = {
     });
   });
 
-  // Chargement depuis l'API bot
+  // ── Click sur une carte → ouvre le modal ──
+  document.getElementById('members-grid').addEventListener('click', e => {
+    const card = e.target.closest('.member-card');
+    if (!card) return;
+    const member = MEMBERS.find(m => m.discordId === card.dataset.id);
+    if (member) openMemberModal(member);
+  });
+  document.getElementById('members-grid').addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const card = e.target.closest('.member-card');
+      if (card) { e.preventDefault(); card.click(); }
+    }
+  });
+
+  // ── Chargement depuis l'API bot ──
   renderLoading();
 
-  const apiUrl = CONFIG.BOT_API_URL
-    ? `${CONFIG.BOT_API_URL}/api/members`
-    : null;
+  const apiUrl = CONFIG.BOT_API_URL ? `${CONFIG.BOT_API_URL}/api/members` : null;
+  const altsUrl = CONFIG.BOT_API_URL ? `${CONFIG.BOT_API_URL}/api/alts`   : null;
 
-  if (!apiUrl) {
-    // BOT_API_URL non configuré — grille vide propre
-    MEMBERS = [];
-    renderMembers('all');
-    return;
+  if (!apiUrl) { MEMBERS = []; renderMembers('all'); return; }
+
+  // Chargement en parallèle : membres + alts
+  Promise.allSettled([
+    fetch(apiUrl).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+    altsUrl ? fetch(altsUrl).then(r => r.ok ? r.json() : null) : Promise.resolve(null),
+  ]).then(([membersResult, altsResult]) => {
+    if (membersResult.status === 'fulfilled' && Array.isArray(membersResult.value)) {
+      MEMBERS = membersResult.value;
+    } else {
+      console.warn('[membres] Fetch échoué :', membersResult.reason);
+    }
+    if (altsResult.status === 'fulfilled' && altsResult.value) {
+      ALTS_DATA = altsResult.value;
+      window.__ALTS_DATA__ = ALTS_DATA; // exposé au modal
+    }
+    updateSubtitle();
+    if (MEMBERS.length === 0 && membersResult.status === 'rejected') {
+      renderError();
+    } else {
+      renderMembers(currentFilter);
+    }
+  });
+})();
+
+/* ── 4b. MODAL PROFIL ── */
+(function initMemberModal() {
+  const modal    = document.getElementById('member-modal');
+  const overlay  = document.getElementById('modal-overlay');
+  const closeBtn = document.getElementById('modal-close');
+  const body     = document.getElementById('modal-body');
+
+  if (!modal) return;
+
+  function normWoW(name) {
+    return String(name).toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9-]/g, '');
   }
 
-  fetch(apiUrl)
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(data => {
-      MEMBERS = Array.isArray(data) ? data : [];
-      renderMembers(currentFilter);
-    })
-    .catch(err => {
-      console.warn('[membres] Fetch échoué :', err);
-      renderError();
-    });
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    body.innerHTML = '';
+  }
+
+  overlay.addEventListener('click', closeModal);
+  closeBtn.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /** Récupère les données Raider.io d'un personnage (thumbnail, classe, spec). */
+  async function fetchRaiderIoAlt(name, realm) {
+    const realmSlug = (realm || CONFIG.DEFAULT_REALM || 'kirin-tor')
+      .toLowerCase().replace(/\s+/g, '-');
+    const url = `https://raider.io/api/v1/characters/profile?region=eu&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=thumbnail_url,active_spec_name,class`;
+    try {
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      return await r.json();
+    } catch { return null; }
+  }
+
+  /** Retourne la liste des alts d'un membre (via son nom normalisé). */
+  function getAltsForMember(memberName, altsData) {
+    const norm = normWoW(memberName);
+    // Chercher comme main
+    const rel = altsData.relations?.[norm];
+    if (rel?.alts?.length) return rel.alts;
+    // Chercher comme alt : peut-être son main a des alts listés
+    const theirMain = altsData.altOf?.[norm];
+    if (theirMain) {
+      const mainRel = altsData.relations?.[theirMain];
+      if (mainRel?.alts?.length) {
+        // On retourne les alts du main, sauf le membre lui-même
+        return mainRel.alts.filter(a => a.normalized !== norm);
+      }
+    }
+    return [];
+  }
+
+  /** Retourne les infos de join du personnage depuis ALTS_DATA.characters. */
+  function getCharInfo(memberName, altsData) {
+    const norm = normWoW(memberName);
+    return altsData.characters?.[norm] || null;
+  }
+
+  window.openMemberModal = function(member) {
+    // Récupérer ALTS_DATA depuis la fermeture de initMembers
+    // On le récupère depuis la variable globale exposée ci-dessous
+    const altsData = window.__ALTS_DATA__ || { relations: {}, altOf: {}, characters: {} };
+
+    const color    = member.classColor || 'var(--muted)';
+    const initials = member.name.slice(0, 2).toUpperCase();
+    const badgeCls = { Tank: 'badge-tank', Heal: 'badge-heal', DPS: 'badge-dps' }[member.role] || '';
+    const charInfo = getCharInfo(member.name, altsData);
+    const alts     = getAltsForMember(member.name, altsData);
+
+    // Avatar header
+    const avatarHtml = member.avatar
+      ? `<img src="${member.avatar}" alt="Avatar de ${member.name}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+         <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:${color}">${initials}</span>`
+      : `<span style="color:${color}">${initials}</span>`;
+
+    // Infos de join
+    let joinHtml = '';
+    if (charInfo?.joinDate || charInfo?.invitedBy) {
+      joinHtml = `<div class="modal-section">
+        <p class="modal-section-title">Infos</p>`;
+      if (charInfo.joinDate)
+        joinHtml += `<p class="modal-meta-row">📅 A rejoint le <b>${charInfo.joinDate}</b></p>`;
+      if (charInfo.invitedBy && charInfo.invitedBy !== 'Inconnue')
+        joinHtml += `<p class="modal-meta-row">🤝 Invité(e) par <b>${charInfo.invitedBy}</b></p>`;
+      joinHtml += `</div>`;
+    }
+
+    // Alts skeleton (on les enrichit après)
+    let altsHtml = '';
+    if (alts.length) {
+      const altCards = alts.map(a =>
+        `<div class="alt-card" id="alt-${normWoW(a.name)}">
+          <div class="alt-avatar" style="color:var(--muted)" id="alt-av-${normWoW(a.name)}">${a.name.slice(0,2).toUpperCase()}</div>
+          <p class="alt-name">${a.name}</p>
+          <p class="alt-spec" id="alt-sp-${normWoW(a.name)}">…</p>
+        </div>`
+      ).join('');
+      altsHtml = `<div class="modal-section">
+        <p class="modal-section-title">${alts.length} reroll${alts.length > 1 ? 's' : ''}</p>
+        <div class="modal-alts-grid">${altCards}</div>
+      </div>`;
+    }
+
+    body.innerHTML = `
+      <div class="modal-header">
+        <div class="modal-avatar-wrap">${avatarHtml}</div>
+        <div class="modal-info">
+          <h2 class="modal-name" id="modal-title">${member.name}</h2>
+          ${member.titre ? `<p class="modal-titre-text">« ${member.titre} »</p>` : ''}
+          <div class="modal-badges">
+            ${member.class ? `<span class="modal-class-text" style="color:${color}">⬥ ${member.class}</span>` : ''}
+            <span class="role-badge ${badgeCls}">${member.role}</span>
+            <span class="modal-rank-text">${member.rank || ''}</span>
+          </div>
+        </div>
+      </div>
+      ${joinHtml}
+      ${altsHtml}
+    `;
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+
+    // Enrichissement asynchrone des alts via Raider.io
+    if (alts.length) {
+      const realm = member.realm || CONFIG.DEFAULT_REALM || 'kirin-tor';
+      alts.forEach(async a => {
+        const data = await fetchRaiderIoAlt(a.name, realm);
+        const normA = normWoW(a.name);
+        const avEl  = document.getElementById(`alt-av-${normA}`);
+        const spEl  = document.getElementById(`alt-sp-${normA}`);
+        if (!avEl) return; // modal fermé entre-temps
+        if (data?.thumbnail_url) {
+          avEl.innerHTML = `<img src="${data.thumbnail_url}" alt="Avatar de ${a.name}"
+            onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;object-position:top center"/>`;
+        }
+        if (spEl) {
+          spEl.textContent = [data?.active_spec_name, data?.class].filter(Boolean).join(' · ') || '—';
+        }
+      });
+    }
+  };
 })();
 
 /* ── 5. GALERIE + LIGHTBOX ── */
@@ -882,5 +1101,14 @@ document.querySelectorAll('.faq-item').forEach(item => {
   });
 });
 </script>
+
+<!-- ── MODAL PROFIL MEMBRE ── -->
+<div id="member-modal" class="member-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-overlay" id="modal-overlay"></div>
+  <div class="modal-box" role="document">
+    <button class="modal-close" id="modal-close" aria-label="Fermer le profil">&times;</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
 </body>
 </html>

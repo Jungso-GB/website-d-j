@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Donjons &amp; Jambons — Guilde WoW · Kirin-Tor EU</title>
+  <title>Donjons &amp; Jambons - Guilde WoW</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
@@ -111,13 +111,15 @@ section:nth-of-type(even){background:var(--surface)}
 .about-crest{width:clamp(160px,30vw,240px);opacity:0.9;filter:drop-shadow(0 0 30px rgba(201,146,42,0.3))}
 
 /* ACTIVITIES */
-.activities-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:24px}
-.activity-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr)}
+.activities-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+@media(max-width:900px){.activities-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.activities-grid{grid-template-columns:1fr}}
+.activity-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:40px 28px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr)}
 .activity-card:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(201,146,42,0.15),inset 0 1px 0 rgba(201,146,42,0.12);transform:translateY(-3px)}
-.activity-icon{width:48px;height:48px;margin:0 auto 18px;color:var(--gold)}
+.activity-icon{width:56px;height:56px;margin:0 auto 22px;color:var(--gold)}
 .activity-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.activity-title{font-family:var(--font-title);font-size:1.05rem;color:var(--gold-light);margin-bottom:10px;letter-spacing:0.04em}
-.activity-desc{font-size:0.9rem;color:var(--muted);line-height:1.6}
+.activity-title{font-family:var(--font-title);font-size:1.1rem;color:var(--gold-light);margin-bottom:12px;letter-spacing:0.04em}
+.activity-desc{font-size:0.92rem;color:var(--muted);line-height:1.65}
 
 /* MEMBERS */
 .member-filters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
@@ -189,10 +191,13 @@ section:nth-of-type(even){background:var(--surface)}
 @media(max-width:540px){.modal-header{flex-direction:column;align-items:flex-start;gap:16px}.modal-box{padding:24px 18px}}
 
 /* GALLERY */
-.gallery-grid{columns:1;gap:14px}
-.gallery-item{break-inside:avoid;margin-bottom:14px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:border-color var(--tr),transform var(--tr)}
+#gallery .container{max-width:100%;padding:0 32px}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:900px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.gallery-grid{grid-template-columns:1fr}}
+.gallery-item{aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:border-color var(--tr),transform var(--tr)}
 .gallery-item:hover{border-color:var(--gold);transform:scale(1.02)}
-.gallery-item img{width:100%;display:block;transition:filter var(--tr)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block;transition:filter var(--tr)}
 .gallery-item:hover img{filter:brightness(1.1)}
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;align-items:center;justify-content:center;padding:20px}
 .lightbox.open{display:flex}
@@ -303,10 +308,8 @@ section:nth-of-type(even){background:var(--surface)}
   .about-grid{grid-template-columns:3fr 2fr}
   .footer-inner{grid-template-columns:2fr 1fr 1fr}
   .footer-brand{align-items:flex-start}
-  .gallery-grid{columns:3}
 }
 @media(min-width:640px){
-  .gallery-grid{columns:2}
   .footer-inner{grid-template-columns:repeat(2,1fr);align-items:start}
 }
 @media(max-width:767px){
@@ -356,7 +359,7 @@ section:nth-of-type(even){background:var(--surface)}
   <div class="hero-content">
     <img src="../../assets/logo.png" alt="Blason Donjons &amp; Jambons" class="hero-logo" onerror="this.style.display='none'"/>
     <h1 class="hero-title">Donjons &amp; Jambons</h1>
-    <p class="hero-subtitle">Guilde Retail &nbsp;·&nbsp; Kirin-Tor &nbsp;·&nbsp; Alliance &amp; Horde</p>
+    <p class="hero-subtitle">Guilde Retail &nbsp;·&nbsp; Alliance &amp; Horde</p>
     <div class="hero-cta">
       <a href="https://discord.gg/82b37hw6dh" target="_blank" rel="noopener" class="btn btn-primary">⚔ Rejoindre la guilde</a>
       <a href="#about" class="btn btn-secondary">En savoir plus ↓</a>
@@ -438,6 +441,21 @@ section:nth-of-type(even){background:var(--surface)}
         <h3 class="activity-title">Housing &amp; Crafts</h3>
         <p class="activity-desc">Entraide métiers, crafts, banque de guilde ouverte à tous.</p>
       </article>
+      <article class="activity-card reveal">
+        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg></div>
+        <h3 class="activity-title">PvP &amp; Arènes</h3>
+        <p class="activity-desc">Battlegrounds, arènes, un peu de chaos organisé selon les envies.</p>
+      </article>
+      <article class="activity-card reveal">
+        <div class="activity-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+        <h3 class="activity-title">Hauts-faits</h3>
+        <p class="activity-desc">Chasse aux achievements, titres et montures rares — plus fun en groupe.</p>
+      </article>
+      <article class="activity-card reveal">
+        <div class="activity-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+        <h3 class="activity-title">Monde ouvert</h3>
+        <p class="activity-desc">World bosses, expéditions, quêtes et délires en zones ouvertes.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -509,12 +527,12 @@ section:nth-of-type(even){background:var(--surface)}
       <div class="ornament"><span class="ornament-diamond"></span></div>
     </header>
     <div class="faq-list">
-      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Qui peut rejoindre Donjons &amp; Jambons ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Tout joueur sur Kirin-Tor (EU) voulant jouer dans la bonne humeur et le respect mutuel. Débutants et vétérans bienvenus, aucun niveau requis. On valorise les gens, pas leur ilvl.</p></div></div>
-      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Y a-t-il des obligations de présence ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Aucune. Tu joues quand tu veux. La seule règle : si tu t'inscris à un événement, tu viens (ou tu préviens). La guilde s'adapte à ta vie, pas l'inverse.</p></div></div>
-      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Comment rejoindre la guilde ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Rejoins le Discord, lis la charte, envoie <strong>"mammouth"</strong> dans <em>#futur-jambons</em>, et on organise un rapide vocal pour faire connaissance.</p></div></div>
-      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Comment fonctionne la banque de guilde ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">La banque est divisée en plusieurs onglets : Libre-Service, Composants, Utilitaires, Nourritures, Housing, Mythique et Events. Les retraits sont limités à 5/j par onglet.</p></div></div>
-      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Faut-il être sur Discord ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Le Discord est le cœur de la guilde. Pas d'obligation d'être en vocal, mais le rejoindre est fortement conseillé.</p></div></div>
-      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Est-ce que vous faites du contenu end-game ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Oui ! Mythique+, raids occasionnels, HF collectifs. On adapte la difficulté selon la motivation du groupe du moment.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Qui peut rejoindre Donjons &amp; Jambons ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Toute personne qui partage notre état d'esprit : entraide, bonne ambiance et envie de jouer ensemble. La guilde est ouverte aux joueurs débutants comme aux plus expérimentés, tant qu'ils respectent les autres membres.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Y a-t-il des obligations de présence ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Non, nous ne demandons pas de présence obligatoire. Chacun joue à son rythme, selon ses disponibilités, dans une ambiance détendue.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Comment rejoindre la guilde ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Nous avons une superbe charte de guilde sur notre Discord, il vous faut la lire pour voir si la guilde vous conviendrait. Lisez attentivement… :3</p></div></div>
+      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Comment fonctionne la banque de guilde ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">La banque de guilde sert à partager des ressources, aider les membres et soutenir la vie collective. Les règles d'accès peuvent varier selon le rang, mais l'objectif reste toujours l'entraide et la confiance. Tous les détails sont dans le canal <strong>« Guide du Jambonneau »</strong>.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Faut-il être sur Discord ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Bien que le vocal ne soit pas obligatoire, nous préférons que les membres soient sur Discord. Ça permet de suivre l'actualité de la guilde, de participer plus facilement et de communiquer rapidement avec les autres membres.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-question" aria-expanded="false">Est-ce que vous faites du contenu end-game ?<svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-answer"><p class="faq-answer-inner">Oui, nous faisons du contenu end-game quand l'occasion se présente et selon les envies des membres. L'idée est de proposer des activités communes sans pression ni obligation.</p></div></div>
     </div>
   </div>
 </section>
@@ -526,7 +544,7 @@ section:nth-of-type(even){background:var(--surface)}
       <h2 class="section-title">Prêt à rejoindre l'aventure ?</h2>
       <div class="ornament"><span class="ornament-diamond"></span></div>
     </header>
-    <p class="join-subtitle reveal">La table est mise, les chopes sont pleines. Il manque juste toi.<br>Viens faire partie de la guilde la plus conviviale de Kirin-Tor.</p>
+    <p class="join-subtitle reveal">La table est mise, les chopes sont pleines. Il manque juste toi.<br>Viens faire partie de la guilde la plus conviviale de WoW !</p>
     <div class="join-cta reveal">
       <a href="https://discord.gg/82b37hw6dh" target="_blank" rel="noopener" class="btn btn-primary">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026c.462-.62.874-1.275 1.226-1.963.021-.04.001-.088-.041-.104a13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028z"/></svg>
@@ -556,7 +574,7 @@ section:nth-of-type(even){background:var(--surface)}
       <div class="footer-brand">
         <img src="../../assets/logo.png" alt="Logo" width="50" height="50" onerror="this.style.display='none'"/>
         <span class="footer-brand-name">Donjons &amp; Jambons</span>
-        <span style="font-size:0.8rem;color:var(--muted)">Guilde WoW · Kirin-Tor EU</span>
+        <span style="font-size:0.8rem;color:var(--muted)">Guilde WoW</span>
       </div>
       <nav class="footer-links" aria-label="Navigation rapide">
         <h4>Navigation</h4>
@@ -1145,16 +1163,13 @@ const CONFIG = {
 
 /* ── 5. GALERIE + LIGHTBOX ── */
 (function initGallery() {
+  // ─── Pour ajouter des screenshots : déposer les fichiers dans le dossier
+  //     ui_kits/assets/screenshots/  puis ajouter une ligne ci-dessous :
+  //     { src: '../../assets/screenshots/nom-du-fichier.jpg', alt: 'Description' },
   const GALLERY = [
-    { src: '../../assets/banniere groupe.jpg',    alt: 'Photo de groupe de la guilde' },
-    { src: '../../assets/emotes/chasseur.png',    alt: 'Emote chasseur' },
-    { src: '../../assets/emotes/Bienvenue.png',   alt: 'Emote bienvenue' },
-    { src: '../../assets/emotes/zen.png',          alt: 'Emote méditation zen' },
-    { src: '../../assets/emotes/Muscle.png',       alt: 'Emote musclé' },
-    { src: '../../assets/emotes/Ilmeda.png',       alt: 'Emote Ilmeda' },
-    { src: '../../assets/emotes/miam.png',         alt: 'Emote miam' },
-    { src: '../../assets/emotes/heal.png',         alt: 'Emote heal' },
-    { src: '../../assets/emotes/DH.png',           alt: 'Emote chasseur de démons' },
+    { src: '../../assets/banniere groupe.jpg', alt: 'Photo de groupe de la guilde' },
+    // { src: '../../assets/screenshots/screenshot1.jpg', alt: 'Description 1' },
+    // { src: '../../assets/screenshots/screenshot2.jpg', alt: 'Description 2' },
   ];
   const grid = document.getElementById('gallery-grid');
   grid.innerHTML = GALLERY.map(g =>

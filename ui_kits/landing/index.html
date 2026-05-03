@@ -71,7 +71,7 @@ section:nth-of-type(even){background:var(--surface)}
 /* Parallax background layer */
 .hero-bg{
   position:absolute;inset:-30px;
-  background-image:url('../../assets/hero.jpg');
+  background-image:url('/assets/hero.jpg');
   background-size:cover;
   background-position:center center;
   filter:blur(0px);
@@ -376,7 +376,7 @@ section:nth-of-type(even){background:var(--surface)}
 <nav class="navbar" role="navigation" aria-label="Navigation principale">
   <div class="container">
     <a href="#accueil" class="nav-logo">
-      <img src="../../assets/logo.png" alt="Logo Donjons &amp; Jambons" width="42" height="42" onerror="this.style.display='none'"/>
+      <img src="/assets/logo.png" alt="Logo Donjons &amp; Jambons" width="42" height="42" onerror="this.style.display='none'"/>
       <span class="nav-logo-name">Donjons &amp; Jambons</span>
     </a>
     <ul class="nav-links" id="nav-links" role="list">
@@ -404,7 +404,7 @@ section:nth-of-type(even){background:var(--surface)}
   <div class="hero-bg" id="hero-bg"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <img src="../../assets/logo.png" alt="Blason Donjons &amp; Jambons" class="hero-logo" onerror="this.style.display='none'"/>
+    <img src="/assets/logo.png" alt="Blason Donjons &amp; Jambons" class="hero-logo" onerror="this.style.display='none'"/>
     <h1 class="hero-title">Donjons &amp; Jambons</h1>
     <p class="hero-subtitle">Guilde Retail &nbsp;·&nbsp; Alliance &amp; Horde</p>
     <div class="hero-cta">
@@ -609,7 +609,7 @@ section:nth-of-type(even){background:var(--surface)}
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="../../assets/logo.png" alt="Logo" width="50" height="50" onerror="this.style.display='none'"/>
+        <img src="/assets/logo.png" alt="Logo" width="50" height="50" onerror="this.style.display='none'"/>
         <span class="footer-brand-name">Donjons &amp; Jambons</span>
         <span style="font-size:0.8rem;color:var(--muted)">Guilde WoW</span>
       </div>
@@ -1217,7 +1217,7 @@ const CONFIG = {
 
 /* ── 5. GALERIE + LIGHTBOX ── */
 (function initGallery() {
-  const SCREENSHOTS_BASE = '../../assets/screenshots/';
+  const SCREENSHOTS_BASE = '/assets/screenshots/';
   const MANIFEST_URL     = SCREENSHOTS_BASE + 'manifest.json';
   const MAX_DISPLAY      = 12; // 3 colonnes × 4 lignes
 

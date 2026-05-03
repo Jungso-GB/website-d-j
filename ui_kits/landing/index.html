@@ -1335,11 +1335,34 @@ const CONFIG = {
   // ── FETCH via le bot (évite CORS + mis en cache 1×/jour côté serveur) ──
   async function loadEvents() {
     const apiUrl = CONFIG.BOT_API_URL ? `${CONFIG.BOT_API_URL}/api/events` : null;
-    if (!apiUrl) { setBadge('mock', 'Non configuré'); renderEvents([]); return; }
+    console.log('[D&J Events] BOT_API_URL =', CONFIG.BOT_API_URL);
+    if (!apiUrl) {
+      console.warn('[D&J Events] BOT_API_URL non configuré — aucun événement');
+      setBadge('mock', 'Non configuré');
+      renderEvents([]);
+      return [];
+    }
 
-    const res  = await fetch(apiUrl);
+    console.log('[D&J Events] Appel :', apiUrl);
+    const res = await fetch(apiUrl);
+    console.log('[D&J Events] HTTP', res.status, res.statusText);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
     const data = await res.json();
+    console.log('[D&J Events] Réponse brute :', data);
+    console.log(`[D&J Events] updatedAt=${data.updatedAt} | totalEvents=${data.totalEvents} | events dans payload=${data.events?.length ?? 0}`);
+
+    if (data.events?.length) {
+      data.events.forEach((ev, i) => {
+        const ts = ev.startTime || ev.date;
+        const dateStr = ts ? new Date(ts > 1e10 ? ts : ts * 1000).toLocaleString('fr-FR') : 'sans date';
+        console.log(`[D&J Events] [${i}] id=${ev.id} | title="${ev.title}" | date=${dateStr} | signUps=${ev.signUps?.length ?? 'n/a'}`);
+      });
+    } else {
+      console.warn('[D&J Events] ⚠️ Le bot a retourné 0 événement');
+      console.info('[D&J Events] 💡 Pour forcer un rechargement : ouvrir', `${CONFIG.BOT_API_URL}/api/events/refresh`);
+    }
+
     return data.events || [];
   }
 
@@ -1349,7 +1372,8 @@ const CONFIG = {
       renderEvents(events);
     })
     .catch(err => {
-      console.warn('[D&J] Events fetch failed:', err.message);
+      console.error('[D&J Events] Fetch échoué :', err.message);
+      console.info('[D&J Events] 💡 Vérifie que le bot est en ligne :', CONFIG.BOT_API_URL);
       setBadge('error', 'Hors ligne');
       renderEvents([]);
     });

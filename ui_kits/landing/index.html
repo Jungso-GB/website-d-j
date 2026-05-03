@@ -191,14 +191,16 @@ section:nth-of-type(even){background:var(--surface)}
 @media(max-width:540px){.modal-header{flex-direction:column;align-items:flex-start;gap:16px}.modal-box{padding:24px 18px}}
 
 /* GALLERY */
-#gallery .container{max-width:100%;padding:0 32px}
-.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+#gallery{padding:80px 0}
+#gallery .container{max-width:100%;padding:0}
+#gallery .section-header{padding:0 40px;margin-bottom:40px}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 @media(max-width:900px){.gallery-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.gallery-grid{grid-template-columns:1fr}}
-.gallery-item{aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:border-color var(--tr),transform var(--tr)}
-.gallery-item:hover{border-color:var(--gold);transform:scale(1.02)}
+.gallery-item{aspect-ratio:16/9;overflow:hidden;border:none;cursor:pointer;transition:opacity var(--tr),transform var(--tr)}
+.gallery-item:hover{opacity:0.88;transform:scale(1.01)}
 .gallery-item img{width:100%;height:100%;object-fit:cover;display:block;transition:filter var(--tr)}
-.gallery-item:hover img{filter:brightness(1.1)}
+.gallery-item:hover img{filter:brightness(1.08)}
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;align-items:center;justify-content:center;padding:20px}
 .lightbox.open{display:flex}
 .lightbox-img{max-width:90vw;max-height:85vh;border-radius:var(--radius);border:1px solid var(--border)}
@@ -736,17 +738,34 @@ const CONFIG = {
       + (altCount > 0 ? ` · ${altCount} reroll${altCount !== 1 ? 's' : ''}` : '');
   }
 
-  // Ordre d'affichage des grades (plus élevé = affiché en premier)
-  const RANK_ORDER = { 'Tavernier': 3, 'Cuisinier': 2, 'Jambonneau': 1 };
+  // Ordre d'affichage des grades (Tavernier → Cuisinier → Jambonneau)
+  const RANK_DISPLAY_ORDER = ['Tavernier', 'Cuisinier', 'Jambonneau'];
+
+  /** Mélange un tableau in-place (Fisher-Yates) */
+  function shuffleArr(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
 
   function renderMembers(filter) {
     currentFilter = filter;
     const grid = document.getElementById('members-grid');
 
-    // Filtrage par rôle puis masquage des Jambons Frais, tri par grade décroissant
-    const list = (filter === 'all' ? MEMBERS : MEMBERS.filter(m => getRoles(m).includes(filter)))
-      .filter(m => m.rank !== 'Jambon Frais')
-      .sort((a, b) => (RANK_ORDER[b.rank] ?? 0) - (RANK_ORDER[a.rank] ?? 0));
+    // Filtrage + masquage des Jambons Frais
+    const filtered = (filter === 'all' ? MEMBERS : MEMBERS.filter(m => getRoles(m).includes(filter)))
+      .filter(m => m.rank !== 'Jambon Frais');
+
+    // Grouper par rang puis mélanger l'intérieur de chaque groupe
+    const byRank = {};
+    for (const m of filtered) {
+      const r = m.rank || 'Jambonneau';
+      if (!byRank[r]) byRank[r] = [];
+      byRank[r].push(m);
+    }
+    const list = RANK_DISPLAY_ORDER.flatMap(rank => shuffleArr(byRank[rank] || []));
 
     if (!list.length) {
       grid.innerHTML = `<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:32px 0">
@@ -1163,20 +1182,49 @@ const CONFIG = {
 
 /* ── 5. GALERIE + LIGHTBOX ── */
 (function initGallery() {
-  // ─── Pour ajouter des screenshots : déposer les fichiers dans le dossier
-  //     ui_kits/assets/screenshots/  puis ajouter une ligne ci-dessous :
-  //     { src: '../../assets/screenshots/nom-du-fichier.jpg', alt: 'Description' },
-  const GALLERY = [
-    { src: '../../assets/banniere groupe.jpg', alt: 'Photo de groupe de la guilde' },
-    // { src: '../../assets/screenshots/screenshot1.jpg', alt: 'Description 1' },
-    // { src: '../../assets/screenshots/screenshot2.jpg', alt: 'Description 2' },
-  ];
+  const SCREENSHOTS_BASE = '../../assets/screenshots/';
+  const MANIFEST_URL     = SCREENSHOTS_BASE + 'manifest.json';
+  const MAX_DISPLAY      = 12; // 3 colonnes × 4 lignes
+
+  /** Mélange un tableau (Fisher-Yates) */
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   const grid = document.getElementById('gallery-grid');
-  grid.innerHTML = GALLERY.map(g =>
-    `<div class="gallery-item" tabindex="0" role="button" aria-label="Agrandir : ${g.alt}" data-src="${g.src}" data-alt="${g.alt}">
-      <img src="${g.src}" alt="${g.alt}" loading="lazy"/>
-    </div>`
-  ).join('');
+
+  function renderGallery(filenames) {
+    // Sélection aléatoire de MAX_DISPLAY images parmi toutes les disponibles
+    const selection = shuffle(filenames).slice(0, MAX_DISPLAY);
+    grid.innerHTML = selection.map(name => {
+      const src = SCREENSHOTS_BASE + encodeURIComponent(name);
+      return `<div class="gallery-item" tabindex="0" role="button" aria-label="Agrandir : ${name}" data-src="${src}" data-alt="${name}">
+        <img src="${src}" alt="${name}" loading="lazy"/>
+      </div>`;
+    }).join('');
+  }
+
+  // Chargement du manifest.json (liste des noms de fichiers)
+  // Formats supportés : .jpg, .png, .webp
+  // Pour ajouter une image : déposer le fichier dans assets/screenshots/
+  // puis ajouter son nom (avec extension) dans assets/screenshots/manifest.json
+  fetch(MANIFEST_URL)
+    .then(r => r.ok ? r.json() : [])
+    .then(filenames => {
+      if (!filenames.length) {
+        grid.innerHTML = '<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:40px">Aucun screenshot disponible pour l\'instant.</p>';
+        return;
+      }
+      renderGallery(filenames);
+    })
+    .catch(() => {
+      grid.innerHTML = '<p style="color:var(--muted);text-align:center;grid-column:1/-1;padding:40px">Galerie temporairement indisponible.</p>';
+    });
 
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lightbox-img');
@@ -1297,7 +1345,7 @@ const CONFIG = {
 
   loadEvents()
     .then(events => {
-      setBadge('live', '● Synchro · Raid-Helper');
+      setBadge('live', 'Synchro · Raid-Helper');
       renderEvents(events);
     })
     .catch(err => {

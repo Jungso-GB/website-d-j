@@ -208,23 +208,68 @@ section:nth-of-type(even){background:var(--surface)}
 .lightbox-close:hover{color:var(--gold-light)}
 
 /* ── EVENTS ── */
-.events-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-.event-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:12px;transition:border-color var(--tr)}
-.event-card:hover{border-color:var(--gold)}
-.event-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.event-title{font-family:var(--font-title);font-size:1rem;color:var(--gold-light);letter-spacing:0.03em}
-.ev-badge{font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap}
+.events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.events-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.events-grid{grid-template-columns:1fr}}
+
+/* Carte event */
+.event-card{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-top:3px solid var(--ev-color, var(--gold));
+  border-radius:var(--radius);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transition:border-color var(--tr),box-shadow var(--tr);
+}
+.event-card:hover{border-color:var(--ev-color,var(--gold));box-shadow:0 4px 24px rgba(0,0,0,0.4)}
+
+/* Image carrée */
+.event-img-wrap{
+  position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;
+  background:var(--surface);flex-shrink:0;
+}
+.event-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease}
+.event-card:hover .event-img-wrap img{transform:scale(1.04)}
+.event-img-wrap.no-img{display:none}
+
+/* Badge statut (positionné sur l'image) */
+.ev-status{
+  position:absolute;top:10px;left:10px;
+  font-size:0.68rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.ev-status::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ev-upcoming{background:rgba(10,60,25,0.85);color:#5dcc7a;border:1px solid rgba(93,204,122,0.35)}
+.ev-upcoming::before{background:#5dcc7a;box-shadow:0 0 5px #5dcc7a}
+.ev-past{background:rgba(30,30,30,0.85);color:#8c7b65;border:1px solid rgba(140,123,101,0.3)}
+.ev-past::before{background:#8c7b65}
+
+/* Corps de la carte */
+.event-body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.event-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.event-title{font-family:var(--font-title);font-size:0.95rem;color:var(--gold-light);letter-spacing:0.03em;line-height:1.3}
+.ev-badge{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;flex-shrink:0}
 .badge-mythic{background:rgba(100,60,200,0.3);color:#b0a0ff;border:1px solid rgba(176,160,255,0.3)}
 .badge-raid{background:rgba(180,50,50,0.3);color:#f08080;border:1px solid rgba(240,128,128,0.3)}
 .badge-social{background:rgba(201,146,42,0.2);color:var(--gold-light);border:1px solid var(--border)}
 .badge-farming{background:rgba(30,100,50,0.3);color:#80d080;border:1px solid rgba(128,208,128,0.3)}
-.event-date{font-size:0.83rem;color:var(--muted)}
-.slot-row{display:flex;align-items:center;gap:10px}
-.slot-bar{flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden}
-.slot-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 0.6s ease}
-.slot-label{font-size:0.75rem;color:var(--muted);white-space:nowrap}
-.btn-signup{background:transparent;border:1px solid var(--gold);color:var(--gold-light);font-size:0.8rem;font-weight:700;padding:7px 16px;border-radius:6px;cursor:pointer;transition:background var(--tr),color var(--tr);text-decoration:none;display:inline-block;align-self:flex-end}
-.btn-signup:hover{background:var(--gold);color:#0f0b07}
+.event-date{font-size:0.8rem;color:var(--muted)}
+.event-desc{font-size:0.82rem;color:var(--text);opacity:0.75;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.slot-row{display:flex;align-items:center;gap:10px;margin-top:2px}
+.slot-bar{flex:1;height:4px;background:var(--surface);border-radius:3px;overflow:hidden}
+.slot-fill{height:100%;background:var(--ev-color,var(--gold));border-radius:3px;transition:width 0.6s ease}
+.slot-label{font-size:0.73rem;color:var(--muted);white-space:nowrap}
+.btn-signup{
+  background:transparent;
+  border:1px solid var(--ev-color,var(--gold));
+  color:var(--gold-light);
+  font-size:0.8rem;font-weight:700;padding:7px 16px;border-radius:6px;
+  cursor:pointer;transition:background var(--tr),color var(--tr);
+  text-decoration:none;display:inline-block;align-self:flex-end;margin-top:auto
+}
+.btn-signup:hover{background:var(--ev-color,var(--gold));color:#0f0b07}
 .events-note{text-align:center;margin-top:24px;font-size:0.82rem;color:var(--muted);font-style:italic}
 
 /* Events empty / loading state */
@@ -1267,6 +1312,15 @@ const CONFIG = {
     return d.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
   }
 
+  /** Convertit une couleur Raid Helper (entier décimal ou hex string) en #rrggbb */
+  function evColor(raw) {
+    if (!raw) return null;
+    if (typeof raw === 'string' && raw.startsWith('#')) return raw;
+    const n = parseInt(raw, 10);
+    if (isNaN(n) || n === 0) return null;
+    return '#' + n.toString(16).padStart(6, '0');
+  }
+
   function renderEvents(events) {
     if (!events || events.length === 0) {
       grid.innerHTML = `
@@ -1281,33 +1335,64 @@ const CONFIG = {
       return;
     }
 
-    grid.innerHTML = events.map(ev => {
-      const type  = guessType(ev.title);
-      const ts    = ev.startTime || ev.date;
-      const dateStr = ts ? formatDate(ts) : '—';
-      // signUps est un tableau envoyé par le bot (IncludeSignUps: true)
-      const signUpsArr = Array.isArray(ev.signUps) ? ev.signUps : [];
-      const filled = signUpsArr.filter(s => s.className !== 'Absence').length || ev.signUpCount || 0;
-      const total  = ev.signUpLimit  || ev.slots?.total  || 0;
-      const hasSlots = total > 0;
-      const pct = hasSlots ? Math.min(100, Math.round(filled / total * 100)) : 0;
-      const signupUrl = ev.signupUrl || ev.url || 'https://discord.gg/82b37hw6dh';
+    // On affiche au maximum 6 events (10 sauvegardés côté bot)
+    const display = events.slice(0, 6);
+    const now = Math.floor(Date.now() / 1000);
 
-      return `<article class="event-card reveal">
-        <div class="event-header">
-          <h3 class="event-title">${ev.title || 'Événement'}</h3>
-          <span class="ev-badge ${type.cls}">${type.label}</span>
+    grid.innerHTML = display.map(ev => {
+      const type     = guessType(ev.title);
+      const ts       = ev.startTime || ev.date;
+      const dateStr  = ts ? formatDate(ts) : '—';
+      const isPast   = ts ? ts < now : false;
+
+      // Couleur de l'event (accent)
+      const color    = evColor(ev.color);
+      const colorVar = color ? `style="--ev-color:${color}"` : '';
+
+      // Image
+      const imgUrl   = ev.imageUrl || ev.image || null;
+      const imgHtml  = imgUrl
+        ? `<div class="event-img-wrap" id="img-${ev.id}">
+             <img src="${imgUrl}" alt="" loading="lazy"
+               onerror="this.parentElement.classList.add('no-img')">
+             <span class="ev-status ${isPast ? 'ev-past' : 'ev-upcoming'}">${isPast ? 'Terminé' : 'À venir'}</span>
+           </div>`
+        : `<div class="event-img-wrap no-img"></div>
+           <div style="padding:14px 20px 0">
+             <span class="ev-status ${isPast ? 'ev-past' : 'ev-upcoming'}" style="position:static;display:inline-flex">${isPast ? 'Terminé' : 'À venir'}</span>
+           </div>`;
+
+      // Description tronquée à 150 caractères
+      const rawDesc = (ev.description || '').trim();
+      const desc    = rawDesc.length > 150 ? rawDesc.slice(0, 147) + '…' : rawDesc;
+
+      // Inscriptions
+      const signUpsArr = Array.isArray(ev.signUps) ? ev.signUps : [];
+      const filled     = signUpsArr.filter(s => s.className !== 'Absence').length || ev.signUpCount || 0;
+      const total      = ev.signUpLimit || ev.slots?.total || 0;
+      const hasSlots   = total > 0;
+      const pct        = hasSlots ? Math.min(100, Math.round(filled / total * 100)) : 0;
+      const signupUrl  = ev.signupUrl || ev.url || 'https://discord.gg/82b37hw6dh';
+
+      return `<article class="event-card reveal" ${colorVar}>
+        ${imgHtml}
+        <div class="event-body">
+          <div class="event-header">
+            <h3 class="event-title">${ev.title || 'Événement'}</h3>
+            <span class="ev-badge ${type.cls}">${type.label}</span>
+          </div>
+          <p class="event-date">📅 ${dateStr}</p>
+          ${desc ? `<p class="event-desc">${desc}</p>` : ''}
+          ${hasSlots
+            ? `<div class="slot-row">
+                 <div class="slot-bar" role="progressbar" aria-valuenow="${filled}" aria-valuemin="0" aria-valuemax="${total}">
+                   <div class="slot-fill" style="width:${pct}%"></div>
+                 </div>
+                 <span class="slot-label">${filled} / ${total}</span>
+               </div>`
+            : ''}
+          <a href="${signupUrl}" target="_blank" rel="noopener" class="btn-signup">S'inscrire ↗</a>
         </div>
-        <p class="event-date">📅 ${dateStr}</p>
-        ${hasSlots
-          ? `<div class="slot-row">
-               <div class="slot-bar" role="progressbar" aria-valuenow="${filled}" aria-valuemin="0" aria-valuemax="${total}">
-                 <div class="slot-fill" style="width:${pct}%"></div>
-               </div>
-               <span class="slot-label">${filled} / ${total}</span>
-             </div>`
-          : `<p class="slot-label">Ouvert à tous</p>`}
-        <a href="${signupUrl}" target="_blank" rel="noopener" class="btn-signup">S'inscrire ↗</a>
       </article>`;
     }).join('');
 

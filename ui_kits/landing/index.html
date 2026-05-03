@@ -1302,14 +1302,24 @@ const CONFIG = {
     return d.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
   }
 
-  /** Convertit une couleur Raid Helper en #rrggbb.
-   *  Gère : "#FFFF00", "FFFF00" (hex sans #), 16776960 (entier décimal Discord) */
+  /** Convertit une couleur Raid Helper en valeur CSS utilisable.
+   *  Gère tous les formats connus :
+   *   - "253,216,53"   → rgb(253,216,53)   ← format Raid Helper v4
+   *   - "#FFFF00"      → "#FFFF00"
+   *   - "FFFF00"       → "#FFFF00"
+   *   - 16776960       → "#ffff00"  (entier décimal Discord)
+   */
   function evColor(raw) {
-    if (raw === null || raw === undefined || raw === '' || raw === 0) return null;
+    if (raw === null || raw === undefined || raw === '') return null;
+    // Format "R,G,B" (Raid Helper v4)
+    if (typeof raw === 'string' && /^\d{1,3},\d{1,3},\d{1,3}$/.test(raw.trim())) {
+      const [r, g, b] = raw.trim().split(',').map(Number);
+      return `rgb(${r},${g},${b})`;
+    }
     // Hex avec # → direct
     if (typeof raw === 'string' && /^#[0-9a-fA-F]{3,6}$/.test(raw)) return raw;
-    // Hex sans # (ex: "FFFF00") → ajoute #
-    if (typeof raw === 'string' && /^[0-9a-fA-F]{3,6}$/.test(raw)) return '#' + raw;
+    // Hex sans # (ex: "FFFF00")
+    if (typeof raw === 'string' && /^[0-9a-fA-F]{6}$/.test(raw)) return '#' + raw;
     // Entier décimal Discord (ex: 16776960 = #FFFF00)
     const n = typeof raw === 'number' ? raw : parseInt(raw, 10);
     if (isNaN(n) || n <= 0) return null;

@@ -208,8 +208,9 @@ section:nth-of-type(even){background:var(--surface)}
 .lightbox-close:hover{color:var(--gold-light)}
 
 /* ── EVENTS ── */
-.events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-@media(max-width:900px){.events-grid{grid-template-columns:repeat(2,1fr)}}
+#events .container{max-width:1440px}
+.events-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1100px){.events-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:540px){.events-grid{grid-template-columns:1fr}}
 
 /* Carte event */
@@ -1341,8 +1342,10 @@ const CONFIG = {
       return;
     }
 
-    // On affiche au maximum 6 events (10 sauvegardés côté bot)
-    const display = events.slice(0, 6);
+    // Trier par startTime décroissant : plus récent/futur à gauche
+    const sorted = [...events].sort((a, b) => (b.startTime ?? 0) - (a.startTime ?? 0));
+    // On affiche au maximum 8 events (10 sauvegardés côté bot)
+    const display = sorted.slice(0, 8);
     const now = Math.floor(Date.now() / 1000);
 
     grid.innerHTML = display.map(ev => {

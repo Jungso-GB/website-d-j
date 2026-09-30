@@ -110,16 +110,37 @@ section:nth-of-type(even){background:var(--surface)}
 .about-illustration{display:flex;justify-content:center}
 .about-crest{width:clamp(160px,30vw,240px);opacity:0.9;filter:drop-shadow(0 0 30px rgba(201,146,42,0.3))}
 
-/* ACTIVITIES */
-.activities-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-@media(max-width:900px){.activities-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.activities-grid{grid-template-columns:1fr}}
-.activity-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:40px 28px;text-align:center;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr)}
-.activity-card:hover{border-color:var(--gold);box-shadow:0 0 24px rgba(201,146,42,0.15),inset 0 1px 0 rgba(201,146,42,0.12);transform:translateY(-3px)}
-.activity-icon{width:56px;height:56px;margin:0 auto 22px;color:var(--gold)}
-.activity-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.activity-title{font-family:var(--font-title);font-size:1.1rem;color:var(--gold-light);margin-bottom:12px;letter-spacing:0.04em}
-.activity-desc{font-size:0.92rem;color:var(--muted);line-height:1.65}
+/* ACTIVITIES — la carte de la taverne */
+.menu-board{position:relative;max-width:1060px;margin:0 auto;padding:60px clamp(22px,5vw,60px) 40px;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(201,146,42,0.10),transparent 70%),var(--surface-2);border:1px solid var(--gold);border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,0.55),inset 0 0 90px rgba(0,0,0,0.35)}
+.menu-board::before{content:'';position:absolute;inset:9px;border:1px solid var(--border);pointer-events:none}
+.menu-corner{position:absolute;width:12px;height:12px;background:var(--gold);transform:rotate(45deg)}
+.menu-corner.tl{top:-7px;left:-7px}.menu-corner.tr{top:-7px;right:-7px}
+.menu-corner.bl{bottom:-7px;left:-7px}.menu-corner.br{bottom:-7px;right:-7px}
+.menu-head{text-align:center;margin-bottom:48px}
+.menu-kicker{font-family:var(--font-title);font-size:0.72rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.menu-tagline{font-style:italic;color:var(--text);opacity:0.75;font-size:0.95rem;margin-top:14px}
+.menu-courses{display:grid;grid-template-columns:1fr;gap:36px;max-width:560px;margin:0 auto}
+.menu-course-title{display:flex;align-items:center;gap:12px;font-family:var(--font-title);font-size:0.74rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;white-space:nowrap}
+.menu-course-title::before,.menu-course-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.menu-item{margin-bottom:28px}
+.menu-item:last-child{margin-bottom:0}
+.menu-chef{display:inline-block;font-size:0.64rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--bg);background:var(--gold);padding:2px 8px;border-radius:2px;margin-bottom:8px}
+.menu-item-head{display:flex;align-items:baseline;gap:8px}
+.menu-item-name{font-family:var(--font-title);font-size:1.12rem;font-weight:600;color:var(--gold-light);letter-spacing:0.02em;min-width:0}
+.menu-item-dots{flex:1;min-width:14px;border-bottom:2px dotted rgba(201,146,42,0.4);transform:translateY(-5px)}
+.menu-item-price{font-size:0.82rem;font-style:italic;color:var(--gold);white-space:nowrap}
+.menu-item-desc{font-size:0.9rem;color:var(--text);opacity:0.8;line-height:1.6;margin-top:6px}
+.menu-foot{display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;margin-top:44px;padding-top:24px;border-top:1px solid var(--border)}
+.menu-foot p{font-size:0.88rem;font-style:italic;color:var(--text);opacity:0.75;margin:0}
+.menu-foot .btn{padding:10px 20px;font-size:0.84rem}
+@media(min-width:1040px){
+  .menu-courses{grid-template-columns:repeat(3,1fr);gap:0;max-width:none}
+  .menu-course{padding:0 26px}
+  .menu-course:first-child{padding-left:0}
+  .menu-course:last-child{padding-right:0}
+  .menu-course+.menu-course{border-left:1px solid var(--border)}
+}
+@media(max-width:520px){.menu-foot{flex-direction:column;align-items:flex-start}}
 
 /* MEMBERS */
 .member-filters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
@@ -454,47 +475,60 @@ section:nth-of-type(even){background:var(--surface)}
 <!-- ACTIVITIES -->
 <section id="activities" data-screen-label="Activités">
   <div class="container">
-    <header class="section-header reveal">
-      <h2 class="section-title">Ce qu'on fait</h2>
-      <div class="ornament"><span class="ornament-diamond"></span></div>
-    </header>
-    <div class="activities-grid">
-      <!-- Mythique+ -->
-      <article class="activity-card reveal">
-        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-        <h3 class="activity-title">Mythique+</h3>
-        <p class="activity-desc">Push chill ou tryhard, selon l'ambiance du jour. Ici, pas de pression de score, on grimpe les niveaux ensemble et à notre propre rythme.</p>
-      </article>
-      <!-- Raids -->
-      <article class="activity-card reveal">
-        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3 class="activity-title">Raids</h3>
-        <p class="activity-desc">On explore les instances en mode relax. L'objectif est d'avancer collectivement et de profiter des boss sans se transformer en "raid leader" autoritaire. NM voir HM.</p>
-      </article>
-      <!-- Donjons -->
-      <article class="activity-card reveal">
-        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <h3 class="activity-title">Donjons</h3>
-        <p class="activity-desc">Des runs pour farmer le stuff ou simplement pour le plaisir de jouer. On adapte la difficulté selon les envies des membres présents sur le moment.</p>
-      </article>
-      <!-- PvP -->
-      <article class="activity-card reveal">
-        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg></div>
-        <h3 class="activity-title">PvP</h3>
-        <p class="activity-desc">Que ce soit en arène ou sur le champ de bataille, on vient surtout pour rigoler. On apprend les mécaniques ensemble, sans jamais se prendre la tête.</p>
-      </article>
-      <!-- Farm & Entraide -->
-      <article class="activity-card reveal">
-        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <h3 class="activity-title">Farm &amp; Entraide</h3>
-        <p class="activity-desc">La base de la guilde. On s'organise pour récolter des ressources, crafter des équipements et s'aider mutuellement à progresser dans le jeu.</p>
-      </article>
-      <!-- Soirées Détente -->
-      <article class="activity-card reveal">
-        <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-        <h3 class="activity-title">Soirées Détente</h3>
-        <p class="activity-desc">Des moments improvisés sur Discord, des concours transmos, housing, ou juste discuter. C'est l'occasion de renforcer les liens entre les jambons.</p>
-      </article>
+    <div class="menu-board reveal">
+      <span class="menu-corner tl" aria-hidden="true"></span><span class="menu-corner tr" aria-hidden="true"></span>
+      <span class="menu-corner bl" aria-hidden="true"></span><span class="menu-corner br" aria-hidden="true"></span>
+
+      <header class="menu-head">
+        <p class="menu-kicker">La carte de la taverne</p>
+        <h2 class="section-title">Ce qu'on fait</h2>
+        <div class="ornament"><span class="ornament-diamond"></span></div>
+        <p class="menu-tagline">Servi à toute heure, sans réservation. Chacun commande ce qui lui fait envie.</p>
+      </header>
+
+      <div class="menu-courses">
+        <div class="menu-course">
+          <h3 class="menu-course-title">Plats de résistance</h3>
+          <article class="menu-item">
+            <span class="menu-chef">Le chef recommande</span>
+            <div class="menu-item-head"><h4 class="menu-item-name">Mythique+</h4><span class="menu-item-dots" aria-hidden="true"></span><span class="menu-item-price">une clé</span></div>
+            <p class="menu-item-desc">Des +2 pour apprendre, des clés plus hautes quand l'équipe est chaude. Personne ne regarde ton score avant de t'inviter.</p>
+          </article>
+          <article class="menu-item">
+            <div class="menu-item-head"><h4 class="menu-item-name">Raids</h4><span class="menu-item-dots" aria-hidden="true"></span><span class="menu-item-price">douze wipes</span></div>
+            <p class="menu-item-desc">En Normal, et en Héroïque quand ça passe. On découvre les boss ensemble, on wipe, on en rigole, on retente. Le lead explique, il ne crie pas.</p>
+          </article>
+        </div>
+
+        <div class="menu-course">
+          <h3 class="menu-course-title">À la carte</h3>
+          <article class="menu-item">
+            <div class="menu-item-head"><h4 class="menu-item-name">Donjons</h4><span class="menu-item-dots" aria-hidden="true"></span><span class="menu-item-price">un tank</span></div>
+            <p class="menu-item-desc">Pour le stuff, un haut fait, ou juste parce qu'il pleut dehors. Demande sur Discord, il y a presque toujours quelqu'un de chaud.</p>
+          </article>
+          <article class="menu-item">
+            <div class="menu-item-head"><h4 class="menu-item-name">PvP</h4><span class="menu-item-dots" aria-hidden="true"></span><span class="menu-item-price">ta dignité</span></div>
+            <p class="menu-item-desc">Arènes et champs de bataille, surtout pour se marrer. On apprend sur le tas et on assume de se faire rouler dessus de temps en temps.</p>
+          </article>
+        </div>
+
+        <div class="menu-course">
+          <h3 class="menu-course-title">Au comptoir</h3>
+          <article class="menu-item">
+            <div class="menu-item-head"><h4 class="menu-item-name">Farm &amp; Entraide</h4><span class="menu-item-dots" aria-hidden="true"></span><span class="menu-item-price">offert</span></div>
+            <p class="menu-item-desc">Composants, crafts, métiers, banque de guilde : ce qui te manque, quelqu'un l'a sûrement au fond de ses sacs.</p>
+          </article>
+          <article class="menu-item">
+            <div class="menu-item-head"><h4 class="menu-item-name">Soirées Détente</h4><span class="menu-item-dots" aria-hidden="true"></span><span class="menu-item-price">une chope</span></div>
+            <p class="menu-item-desc">Concours de transmo, visites de housing, vocal qui s'éternise. Pas de boss ce soir, juste des jambons qui papotent.</p>
+          </article>
+        </div>
+      </div>
+
+      <footer class="menu-foot">
+        <p>Pas de minimum de commande, pas d'heure de fermeture.</p>
+        <a href="#events" class="btn btn-secondary">Voir l'ardoise du soir →</a>
+      </footer>
     </div>
   </div>
 </section>
